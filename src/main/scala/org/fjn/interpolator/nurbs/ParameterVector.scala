@@ -1,8 +1,9 @@
 package org.fjn.interpolator.nurbs
 
-import org.fjn.interpolator.common.Point
+import org.fjn.interpolator.common.{MultiArrayView, Point}
 import collection.immutable.IndexedSeq
 import collection.immutable
+import org.fjn.interpolator.common.matrix.Matrix
 
 /**
  * Created by fjn army of one.
@@ -21,30 +22,53 @@ trait ParameterVector {
   self: ControlPoint =>
 
 
-
+  /**
+   * Computes the parameter vector given the sample points provided in the inherited trait ControlPoint
+   * @param axis sequence of vector compounding the axis to be processed for parameter computation
+   * @return sequence of transformed vector in the normalized space
+   */
   protected def computParameters(axis:Seq[Double]):Seq[Double]
 
 
+  private def genSeq(v:Int,nCoord:Int,nDim:Int):Seq[Int]={
+    for(n<- 0 until nDim) yield {
+      if (n == nCoord) v else 0
+    }
+  }
 
-  lazy val parameterKnots_x: Seq[Double] = computParameters(xAxis)
-  lazy val parameterKnots_y: Seq[Double] = computParameters(yAxis)
+  lazy val parameterKnots: Seq[Seq[Double]] = {
 
-  /**Calculating the final parameter knots associated to the sequence of points qk
-     with the Chord method*/
-  val parameterKnots = Seq(parameterKnots_x,parameterKnots_y)
+     (for(nD <- 0 until self.dim.length) yield{
+        val nDim = self.dim(nD)
+        val a = (for(n <- 0 until nDim) yield{
+          val sq: Seq[Int] = genSeq(n,nD,nDim)
+          val a: Matrix[Double] = self.viewQk(sq)
+          a
+        }).toSeq
+
+      computParameters(a.map(v => v(nD,0)))
+    } ).toSeq
+
+  }
 
 
   /**
      * the linear 'matrix'  of transformed points, which consists
      * of the original points qk but placed into the transformed coordinates (u,v)
      */
+   lazy val tqk: immutable.Seq[Matrix[Double]] = {
+    (0 until qk.length).map(i =>{
+      val sq = viewQk.fromIndex2Seq(i)
+      val m: Matrix[Double] = viewQk(sq).clone()
 
-   lazy val tqk: Seq[Point[Double]] =
-     (for (yn <- 0 until parameterKnots_y.length;
-          xn <- 0 until parameterKnots_x.length)
-       yield{
-        new Point[Double](x = parameterKnots_x(yn),y = parameterKnots_y(yn), z = zValues(yn*parameterKnots_x.length+xn) )
-     } ) toSeq
+      (0 until sq.length).foreach(n =>{
+        m.set(n,0,parameterKnots(n)(sq(n)))
+      })
+      m
+    }).toSeq
+  }
+
+  lazy val viewTQk = new MultiArrayView(tqk,dim)
 
 }
 

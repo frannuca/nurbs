@@ -1,6 +1,7 @@
 package org.fjn.interpolator.nurbs
 
 import org.fjn.interpolator.common.{Point, MultiArrayView}
+import org.fjn.interpolator.common.matrix.Matrix
 
 
 /**
@@ -8,21 +9,14 @@ import org.fjn.interpolator.common.{Point, MultiArrayView}
  */
 trait ControlPoint {
 
-  /**list of point along x coordinate*/
-  val xAxis:Seq[Double]
+  /**List of points conforming the n-Dimensional samples provided for interpolation */
+  val qk:Seq[Matrix[Double]]
 
-  /**list of points along x coordinate */
-  val yAxis:Seq[Double]
+  /**sequence hosting the number of points per dimension. This sequence is used to compute */
+  val dim:Seq[Int]
 
-  /**list of z-values distributed as series of xAxis.length slices zval(i,j)=zValue(j*xArray.length+i)*/
-  val zValues:Seq[Double]
 
-  /** Computed list of 3D points composing the grid x,y,z*/
-  protected lazy val qk =
-    for(yc <- 0 until yAxis.length;
-        xc <- 0 until xAxis.length
-       ) yield{
-      new Point[Double](x=xAxis(xc),y=yAxis(yc),z=zValues(yc*xAxis.length+xc))
-    }
+  /**Accessor to n-dimensional grid */
+  lazy val viewQk = new MultiArrayView[Matrix[Double]](qk,dim)
 
 }
