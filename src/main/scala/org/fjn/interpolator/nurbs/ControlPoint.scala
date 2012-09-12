@@ -10,10 +10,10 @@ import org.fjn.interpolator.common.matrix.Matrix
 trait ControlPoint {
 
   /**List of points conforming the n-Dimensional samples provided for interpolation */
-  val qk:Seq[Matrix[Double]]
+  def qk:Seq[Matrix[Double]]
 
   /**sequence hosting the number of points per dimension. This sequence is used to compute */
-  val dim:Seq[Int]
+  def dim:Seq[Int]
 
 
   /**Accessor to n-dimensional grid */

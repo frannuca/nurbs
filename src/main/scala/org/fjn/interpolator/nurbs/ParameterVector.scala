@@ -41,7 +41,7 @@ trait ParameterVector {
      (for(nD <- 0 until self.dim.length) yield{
         val nDim = self.dim(nD)
         val a = (for(n <- 0 until nDim) yield{
-          val sq: Seq[Int] = genSeq(n,nD,nDim)
+          val sq: Seq[Int] = genSeq(n,nD,self.dim.length)
           val a: Matrix[Double] = self.viewQk(sq)
           a
         }).toSeq

@@ -7,7 +7,7 @@ package org.fjn.interpolator.common
  *                   per slice. This information is passed through this parameter
  * @tparam T: Type of item. Typically we will have double or Matrix[Double] types
  */
-class MultiArrayView[T](storage:Seq[T],dimensions:Seq[Int]) {
+class MultiArrayView[T](val storage:Seq[T],val dimensions:Seq[Int]) {
 
   /**
    * Given the sequence of coordinates returns the item at this location.

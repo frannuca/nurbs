@@ -10,7 +10,7 @@ import solver.{Solver2D, Solver1D}
 *           distribution is: [0,0]-coordinate = abscissa. [1,0]-coordinate = function value
 * @param basisOrderv: Sequence of 1 value containing the order of the interpolation to be applied
 */
-class Nurbs1D(val qkv: Seq[Matrix[Double]], val basisOrderv: Seq[Int])
+class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
   extends ControlPoint
   with ParameterVectorCentripetal
   with BasisFunctionOrder
@@ -18,11 +18,7 @@ class Nurbs1D(val qkv: Seq[Matrix[Double]], val basisOrderv: Seq[Int])
   with Basis
   with Solver1D {
 
-  val qk = qkv
-
-  val basisOrder = basisOrderv
-
-  val dim = Seq(qk.length)
+  lazy val dim = Seq(qk.length)
 
   def apply(t: Double): Matrix[Double] = {
 

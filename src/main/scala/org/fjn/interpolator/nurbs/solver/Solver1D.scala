@@ -15,7 +15,8 @@ import org.fjn.interpolator.common.matrix.Matrix
 
 trait Solver1D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>
-  val numberOfSamples: Int = self.qk.length
+  val init = self.tqk
+  val numberOfSamples: Int = self.tqk.length
   var pk: Matrix[Double] = new Matrix[Double](1, 1)
   val weights: Array[Double] = new Array[Double](self.qk.length)
 
@@ -27,7 +28,9 @@ trait Solver1D {
         val qMatrix = new Matrix[Double](numberOfSamples, numberOfSamples)
         for (i <- 0 until numberOfSamples) {
           for (j <- 0 until numberOfSamples) {
-            val vv = NBasis(j, basisOrder(k), k)(tqk(i)(k, 0))
+            val jaux = j
+            val auxU = tqk(i)(k, 0)
+            val vv = NBasis(j, basisOrder(k), k)(auxU)
             qMatrix.set(i, j, vv)
           }
 
