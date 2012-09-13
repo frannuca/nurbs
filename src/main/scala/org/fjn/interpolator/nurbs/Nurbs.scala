@@ -4,20 +4,17 @@ import org.fjn.interpolator.common.matrix.Matrix
 import solver.{Solver2D, Solver1D}
 
 
-/**
-*
-* @param qkv: Sequence of 2-component vector containing the samples to be interpolated. The input vector component
-*           distribution is: [0,0]-coordinate = abscissa. [1,0]-coordinate = function value
-* @param basisOrderv: Sequence of 1 value containing the order of the interpolation to be applied
-*/
-class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
+
+trait Nurbs1DBase
   extends ControlPoint
-  with ParameterVectorEqually
+  with ParameterVector
   with BasisFunctionOrder
   with KnotsVector
   with Basis
   with Solver1D {
 
+
+  val tolerance:Double
   lazy val dim = Seq(qk.length)
 
   def apply(t: Double): Matrix[Double] = {
@@ -36,45 +33,51 @@ class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
   }
 
 
+
   /**
    *  TODO: do linear access to point in order to have fast coordinate look-up
    *  Correct non equally distribuions --> 1D coordinate look up is buggy(infinite loops)
    * */
   def getNormalizedCoord(x: Double): Double = {
 
-    def nurb: (Double => Double) = x => {
-      this.apply(x)(0, 0)
-    }
+
+
+    def nurb = (x:Double) => this.apply(x)(0,0)
 
     var dLow = 0.0
     var dHigh = 1.0
     var dMean = 0.5
 
-    var maxVal = nurb(dHigh)
-    var minVal = nurb(dLow)
+
     var mean = nurb(dMean)
-
-
-
-
+    var counter = 0
     var found: Boolean = false
     while (!found) {
-      if (math.abs(x - mean) < 1e-5)
+      if (math.abs(x - mean) < tolerance) {
         found = true
-
-
-      if (x < mean) {
-        dHigh = dMean
       }
-      else if (x > mean) {
-        dLow = dMean
+      else {
+        if (x < mean) {
+          dHigh = dMean
+        }
+        else if (x > mean) {
+          dLow = dMean
+        }
+        else
+          found = true
+
+        dMean = (dHigh + dLow) * 0.5
+        mean = nurb(dMean)
+
+        if (dHigh <= dLow)
+          found = true
       }
-      else
+      counter = counter + 1
+      if (counter > 500)
         found = true
-
-      dMean = (dHigh + dLow) * 0.5
-      mean = nurb(dMean)
     }
+
+
 
     dMean
   }
@@ -106,6 +109,31 @@ class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
 
   }
 }
+
+
+class Nurbs1DEqually(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val xMax:Double,val xMin:Double)
+extends  Nurbs1DBase with ParameterVectorEqually{
+
+  val tolerance:Double = 0
+  override def getNormalizedCoord(x: Double): Double = {
+
+
+    (x - xMin) / (xMax - xMin)
+
+
+  }
+}
+
+class Nurbs1DChord(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val tolerance:Double)
+  extends  Nurbs1DBase with ParameterVectorChord{
+
+}
+
+class Nurbs1DCentripetal(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val tolerance:Double)
+  extends  Nurbs1DBase with ParameterVectorCentripetal{
+
+}
+
 
 trait Nurbs2DBase
   extends ControlPoint

@@ -33,32 +33,47 @@ object testNurbs1D {
     })
 
 
-
-    val order = 1
+    val order = 2
     val xAxis: immutable.Seq[Matrix[Double]] = qk.map(v =>{
       val o = new Matrix[Double](1,1);
       o.set(0,0,v(0,0))
       o}
-      ).toSeq
-    val bspline = new Nurbs1D(xAxis, Seq(order))
-    bspline.solve(qk.map(v => v(1,0)).toArray);
+    ).toSeq
+    //Equally:
+
+    def testFunc(bspline:Nurbs1DBase){
+
+      bspline.solve(qk.map(v => v(1,0)).toArray);
 
 
-    //check values
-    val diff = (0 until 100).map(n=>{
-      val x = n.toDouble/100.0
-      val z=func(x)
-      val tx = bspline.getNormalizedCoord(x)
-      val zNurb = bspline(tx)
-      math.abs(z-zNurb(1,0))
-    })
+      //check values
+      val diff = (0 until 1500).map(n=>{
+        val x = n.toDouble/1500.0
+        val z=func(x)
+        val tx = bspline.getNormalizedCoord(x)
+        val zNurb = bspline(tx)
+        math.abs(z-zNurb(1,0))
+
+      })
 
 
 
 
 
-    val br = new BufferedReader(new InputStreamReader(System.in));
-    br.readLine()
+      println("max diff="+diff.max.toString())
+
+    }
+
+    val bspline = new Nurbs1DEqually(xAxis, Seq(order),1.0,0.0)
+    testFunc(bspline)
+
+    //Chord:
+    val bspline2 = new Nurbs1DChord(xAxis, Seq(order),1e-2)
+    testFunc(bspline2)
+
+    val bspline3 = new Nurbs1DCentripetal(xAxis, Seq(order),1e-2)
+    testFunc(bspline3)
+
 
   }
 
