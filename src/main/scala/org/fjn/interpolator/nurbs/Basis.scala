@@ -14,14 +14,10 @@ trait Basis {
   self: KnotsVector with BasisFunctionOrder =>
 
   private def N(knots: Seq[Seq[Double]])(i: Int, p: Int, nCoord: Int)(u: Double): Double = {
-    if(u==1){
-      val a = 0.0
-    }
-
     if (p == 0) {
       if (knots(nCoord)(i) <= u && u < knots(nCoord)(i + 1))
         1.0
-      else if( knots(nCoord)(i + 1) == 1 && u==1)
+      else if(knots(nCoord)(i + 1) == 1 && u==1 && knots(nCoord)(i) != 1)
         1.0
       else
         0.0

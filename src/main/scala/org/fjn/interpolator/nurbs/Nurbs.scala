@@ -12,7 +12,7 @@ import solver.{Solver2D, Solver1D}
 */
 class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
   extends ControlPoint
-  with ParameterVectorCentripetal
+  with ParameterVectorEqually
   with BasisFunctionOrder
   with KnotsVector
   with Basis
@@ -36,6 +36,10 @@ class Nurbs1D(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int])
   }
 
 
+  /**
+   *  TODO: do linear access to point in order to have fast coordinate look-up
+   *  Correct non equally distribuions --> 1D coordinate look up is buggy(infinite loops)
+   * */
   def getNormalizedCoord(x: Double): Double = {
 
     def nurb: (Double => Double) = x => {
