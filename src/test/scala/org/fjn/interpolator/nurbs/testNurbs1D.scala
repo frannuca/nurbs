@@ -23,8 +23,8 @@ object testNurbs1D {
 
 
 
-    val qk = (0 until 10).map(n => {
-      val x = n.toDouble/10.0
+    val qk = (0 until 1000).par.map(n => {
+      val x = n.toDouble/1000.0
       val z=func(x)
       val m = new Matrix[Double](2,1)
       m.set(0,0,x)
@@ -34,11 +34,11 @@ object testNurbs1D {
 
 
     val order = 2
-    val xAxis: immutable.Seq[Matrix[Double]] = qk.map(v =>{
+    val xAxis: immutable.Seq[Matrix[Double]] = qk.par.map(v =>{
       val o = new Matrix[Double](1,1);
       o.set(0,0,v(0,0))
       o}
-    ).toSeq
+    ).seq.toSeq
     //Equally:
 
     def testFunc(bspline:Nurbs1DBase){
@@ -47,7 +47,7 @@ object testNurbs1D {
 
 
       //check values
-      val diff = (0 until 1500).map(n=>{
+      val diff = (0 until 1500).par.map(n=>{
         val x = n.toDouble/1500.0
         val z=func(x)
         val tx = bspline.getNormalizedCoord(x)
