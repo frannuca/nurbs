@@ -19,6 +19,7 @@ trait Solver2D {
 
   val pointDimension = 3 //(x,y,z)
 
+  self.qk
   val weights: Array[Double] = new Array[Double](self.qk.length)
   var pk: Seq[Matrix[Double]] = Seq()
 

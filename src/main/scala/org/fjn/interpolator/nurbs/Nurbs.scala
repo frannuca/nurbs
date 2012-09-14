@@ -137,17 +137,18 @@ class Nurbs1DCentripetal(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],va
 
 trait Nurbs2DBase
   extends ControlPoint
+  with ParameterVector
   with BasisFunctionOrder
   with KnotsVector
   with Basis
   with Solver2D {
-  self: ParameterVector =>
+
 
 
   val xAxis: Seq[Double]
   val yAxis: Seq[Double]
 
-  val qk = for (y <- yAxis;
+  lazy val qk = for (y <- yAxis;
                 x <- xAxis)
   yield {
     val m = new Matrix[Double](2, 1);
@@ -281,25 +282,17 @@ class Nurbs2D(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrderv: S
 }
 
 
-class Nurbs2DChord(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrderv: Seq[Int], val dimv: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DChord(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
   extends ParameterVectorChord with Nurbs2DBase {
 
-
-  val basisOrder = basisOrderv
-
-  val dim = dimv
 
   println("Nurbs2DChord")
 
 }
 
 
-class Nurbs2DCentripetal(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrderv: Seq[Int], val dimv: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DCentripetal(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
   extends ControlPoint with ParameterVectorCentripetal with Nurbs2DBase {
-
-  val basisOrder = basisOrderv
-
-  val dim = dimv
 
 
   println("Nurbs2DCentripetal")
