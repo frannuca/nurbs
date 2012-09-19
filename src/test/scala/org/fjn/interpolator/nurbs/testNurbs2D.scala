@@ -1,34 +1,75 @@
 package org.fjn.interpolator.nurbs
 
+import _root_.net.ericaro.surfaceplotter.JSurfacePanel
+import _root_.net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 import org.fjn.interpolator.common.matrix.Matrix
 import scala.Array
-
+import javax.swing.{SwingUtilities, JFrame}
+import java.awt.BorderLayout
+import java.util.Random
+import scala.collection.JavaConversions._
 
 object testNurbs2D {
 
-  def psinc:Function2[Double,Double,Double] =
-    (u,v) => math.sin(math.sqrt(u*u+v*v+1e-4))/math.sqrt(u*u+v*v+1e-4)
+  def testSomething(f:Function2[Double,Double,Double],max:Int) {
+    val jsp: JSurfacePanel = new JSurfacePanel
+    jsp.setTitleText("Hello")
+    val jf: JFrame = new JFrame("test")
+    jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+    jf.getContentPane.add(jsp, BorderLayout.CENTER)
+    jf.pack
+    jf.setVisible(true)
+    val rand: Random = new Random
 
-  def generateSamples(nSamplesX:Int,nSamplesY:Int):(Seq[Matrix[Double]],Seq[Double],Seq[Double])={
+    val z1 = Array.ofDim[Float](max,max)
+    val z2 = Array.ofDim[Float](max,max)
 
-    var xAxis = Seq[Double]()
-    var yAxis = Seq[Double]()
 
-      ((for(
+      for(i <- 0 until max) {
+        {
+
+
+            for (j <- 0 until max) {
+
+               val x = 0.5*math.Pi*i.toDouble/max
+               val y = 0.5*math.Pi*j.toDouble/max
+
+                z1(i)(j) = f(x,y).toFloat
+                z2(i)(j) = psinc(x.toFloat,y.toFloat) .toFloat
+
+
+            }
+
+        }
+
+
+    }
+    val sm: ArraySurfaceModel = new ArraySurfaceModel
+    sm.setValues(0f, 0.5f*math.Pi.toFloat, 0f, 0.5f*math.Pi.toFloat, max, z1, z2)
+    jsp.setModel(sm)
+  }
+  def psinc:Function2[Double,Double,Double] ={
+    (u,v) => math.sin(3.0*v*math.Pi)// math.sin(math.sqrt(u*u+v*v+1e-4))/math.sqrt(u*u+v*v+1e-4)
+    //(u,v)=> 8.0
+  }
+
+
+  def generateSamples(nSamplesX:Int,nSamplesY:Int):(Seq[Matrix[Double]])={
+
+
+      val a = (for(
         k<- 0 until nSamplesY;
         h <- 0 until nSamplesX
       ) yield {
         val mt = new Matrix[Double](2,1)
         mt.zeros;
-        xAxis = xAxis ++ Seq(3.0*h.toDouble/nSamplesX)
-        yAxis =yAxis ++ Seq( 3.0*k.toDouble/nSamplesY)
-        mt.set(0,0,3.0*h.toDouble/nSamplesX)
-        mt.set(1,0,3.0*k.toDouble/nSamplesY)
+        mt.set(0,0,0.5*math.Pi*h.toDouble/nSamplesX)
+        mt.set(1,0,0.5*math.Pi*k.toDouble/nSamplesY)
         mt
       }
-        ).toSeq,xAxis,yAxis)
+        ).toSeq
 
-
+           a
 
   }
   def main(args:Array[String]){
@@ -36,9 +77,9 @@ object testNurbs2D {
 
 
 
-    val nSamplesX = 15
-    val nSamplesY= 12
-    val (qk,xAxis,yAxis) = generateSamples(nSamplesX,nSamplesY)
+    val nSamplesX = 5
+    val nSamplesY= 5
+    val qk = generateSamples(nSamplesX,nSamplesY)
 
 
     val z =(for(q <- qk)
@@ -51,11 +92,13 @@ object testNurbs2D {
     }).toArray
 
     val order = 2
-    val bspline = new Nurbs2D(xAxis.toList.distinct.sortWith((a,b)=> a < b),yAxis.toList.distinct.sortWith((a,b)=> a < b),Array(order,order),Seq(nSamplesX,nSamplesY))
 
-    val nSamplesX2=20
-    val nSamplesY2=25
-    val (qk2,x,y) = generateSamples(nSamplesX2,nSamplesY2)
+    val bspline = new Nurbs2D(qk,Array(order,order),Seq(nSamplesX,nSamplesY))
+
+
+    val nSamplesX2=5
+    val nSamplesY2=5
+    val qk2 = generateSamples(nSamplesX2,nSamplesY2)
     testFunc(bspline,z,qk2)
   }
 
@@ -63,9 +106,8 @@ object testNurbs2D {
 
       bspline.solve(z);
 
-      var sumError = 0.0d
-      for(item <- qk)
-      {
+      var sumError =
+      qk.par.map( item =>{
         val u = bspline.getNormalizedCoord( item(0,0),0)
         val v = bspline.getNormalizedCoord( item(1,0),1)
         val ax = bspline(u,v)
@@ -73,25 +115,19 @@ object testNurbs2D {
         val y = ax(1,0)
         val z = ax(2,0)
         val r = psinc(item(0,0),item(1,0))
-        sumError = sumError + math.abs(z-r)
-        if(math.abs(z-r)>1e-2)
-        {
-          println("Error in the solved system larger than 1e-3"+"Expected "+r+" obtained "+z)
-
-        }
-        else if(math.abs(x-item(0,0))>1e-2)
-        {
-          println("Error in the solved system larger than 1e-3"+"Expected "+x+" obtained "+item(0,0))
-        }
-        else if(math.abs(y-item(1,0))>1e-2)
-        {
-          println("Error in the solved system larger than 1e-3"+"Expected "+y+" obtained "+item(1,0))
-        }
 
 
+        math.abs(z-r)
+      })
+
+
+      println("Total error ="+sumError.max)
+
+    SwingUtilities.invokeLater(new Runnable {
+      def run {
+        testSomething((x:Double,y:Double)=> bspline(bspline.getNormalizedCoord(x,0),bspline.getNormalizedCoord(y,1))(2,0),40)
       }
-
-      println("Total error ="+sumError)
+    })
 
     }
 

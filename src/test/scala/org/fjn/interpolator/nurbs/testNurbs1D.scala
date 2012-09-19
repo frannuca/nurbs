@@ -33,7 +33,7 @@ object testNurbs1D {
     })
 
 
-    val order = 2
+    val order = 1
     val xAxis: immutable.Seq[Matrix[Double]] = qk.par.map(v =>{
       val o = new Matrix[Double](1,1);
       o.set(0,0,v(0,0))
@@ -47,8 +47,8 @@ object testNurbs1D {
 
 
       //check values
-      val diff = (0 until 1500).par.map(n=>{
-        val x = n.toDouble/1500.0
+      val diff = (0 until 1000).par.map(n=>{
+        val x = n.toDouble/1000.0
         val z=func(x)
         val tx = bspline.getNormalizedCoord(x)
         val zNurb = bspline(tx)

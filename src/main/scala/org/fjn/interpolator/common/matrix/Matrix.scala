@@ -309,6 +309,7 @@ class Matrix[T1](nRows: Int, nCols: Int, isRowMajor: Boolean = false)(implicit m
     val I = Jama.Matrix.identity(this.numberRows, this.numberCols);
     val s = A.solve(I);
     this.data = s.getColumnPackedCopy().asInstanceOf[Array[T1]]
+
     //650321210
   }
 }

@@ -144,19 +144,6 @@ trait Nurbs2DBase
   with Solver2D {
 
 
-
-  val xAxis: Seq[Double]
-  val yAxis: Seq[Double]
-
-  lazy val qk = for (y <- yAxis;
-                x <- xAxis)
-  yield {
-    val m = new Matrix[Double](2, 1);
-    m.set(0, 0, x)
-    m.set(1, 0, y)
-    m
-  }
-
   def tolerance: Double
 
   def apply(u: Double, v: Double): Matrix[Double] = {
@@ -223,66 +210,94 @@ trait Nurbs2DBase
     dMean
   }
 
-  def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
-    val vector = knotsVector(nCoord)
-    val sz = vector.length - basisOrder(nCoord) - 1
+//  def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
+//
+//    //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1
+//
+//    val vector = knotsVector(nCoord)
+//    val sz = vector.length - basisOrder(nCoord) - 1
+//
+//    var i = 0
+//    var found: Boolean = false
+//    var counter = 0
+//    while (!found && counter < sz) {
+//      if (t <= vector(counter)) {
+//        i = counter
+//        found = true
+//      }
+//      counter = counter + 1
+//    }
+//
+//    val resVector =
+//      if (found) {
+//        i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
+//      }
+//      else
+//        0 until vector.length
+//
+//    resVector.filter(c => c >= 0 && c < sz)
+//
+//
+//
+//  }
+def getBasisRange(nCoord:Int)(t:Double):Seq[Int]={
+  val vector = knotsVector(nCoord)
+  val sz = vector.length-basisOrder(nCoord)-1
 
-    var i = 0
-    var found: Boolean = false
-    var counter = 0
-    while (!found && counter < sz) {
-      if (t <= vector(counter)) {
-        i = counter
-        found = true
-      }
-      counter = counter + 1
+  var i=0
+  var found:Boolean=false
+  var counter = 0
+  while(!found && counter < sz){
+    if (t<=vector(counter))
+    {
+      i = counter
+      found=true
     }
-
-    val resVector =
-      if (found) {
-        i - basisOrder(nCoord) - 1 until i + basisOrder(nCoord) + 1
-      }
-      else
-        0 until vector.length
-
-    resVector.filter(c => c >= 0 && c < sz)
-
-
+    counter = counter + 1
   }
+
+  val resVector =
+    if(found){
+      i-basisOrder(nCoord)-1 until i+basisOrder(nCoord)+1
+    }
+    else
+      0 until vector.length
+
+  resVector.filter(c => c >= 0 && c < sz)
+
+
+}
 }
 
 
-class Nurbs2D(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrderv: Seq[Int], val dimv: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2D(val qk:Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
   extends Nurbs2DBase with ParameterVectorEqually {
 
 
-  val basisOrder = basisOrderv
+  val maxValX = qk.map(v => v(0,0)).max
+  val maxValY = qk.map(v => v(1,0)).max
 
-  val dim = dimv
+
+  val minValX = qk.map(v => v(0,0)).min
+  val minValY = qk.map(v => v(1,0)).min
 
 
   override def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
 
-    def nurb: (Double => Double) = x => {
-      if (nCoord == 0) this.apply(x, 0)(nCoord, 0) else this.apply(0, x)(nCoord, 0)
-    }
+    var maxVal = if(nCoord == 0) maxValX else maxValY
+    var minVal = if(nCoord == 0) minValX else minValY
 
-    var dLow = 0.0
-    var dHigh = 1.0
-    var dMean = 0.5
 
-    var maxVal = nurb(dHigh)
-    var minVal = nurb(dLow)
 
-    dMean = (x - minVal) / (maxVal - minVal)
-    dMean
+    (x - minVal) / (maxVal - minVal)
+
 
   }
 }
 
 
-class Nurbs2DChord(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DChord(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
   extends ParameterVectorChord with Nurbs2DBase {
 
 
@@ -291,7 +306,7 @@ class Nurbs2DChord(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrde
 }
 
 
-class Nurbs2DCentripetal(val xAxis: Seq[Double], val yAxis: Seq[Double], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DCentripetal(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
   extends ControlPoint with ParameterVectorCentripetal with Nurbs2DBase {
 
 
