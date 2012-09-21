@@ -8,12 +8,17 @@ import javax.swing.{SwingUtilities, JFrame}
 import java.awt.BorderLayout
 import java.util.Random
 import scala.collection.JavaConversions._
+import org.fjn.interpolator.common.MultiArrayView
+
 
 object testNurbs2D {
 
-  def testSomething(f:Function2[Double,Double,Double],max:Int) {
+  def testSomething(f:Function2[Double,Double,Double],fRef:Function2[Double,Double,Double],dimX:Int,qk:Seq[Matrix[Double]]) {
+
+    val dimY = dimX
+
     val jsp: JSurfacePanel = new JSurfacePanel
-    jsp.setTitleText("Hello")
+    jsp.setTitleText("NURBS 2D")
     val jf: JFrame = new JFrame("test")
     jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     jf.getContentPane.add(jsp, BorderLayout.CENTER)
@@ -21,35 +26,43 @@ object testNurbs2D {
     jf.setVisible(true)
     val rand: Random = new Random
 
-    val z1 = Array.ofDim[Float](max,max)
-    val z2 = Array.ofDim[Float](max,max)
+    val z1 = Array.ofDim[Float](dimX,dimY)
+    val z2 = Array.ofDim[Float](dimX,dimY)
 
 
-      for(i <- 0 until max) {
+    val vw = new MultiArrayView[Matrix[Double]]( qk ,Seq(dimX,dimY))
+      for(i <- 0 until dimX) {
         {
+            for (j <- 0 until dimY) {
 
-
-            for (j <- 0 until max) {
-
-               val x = 0.5*math.Pi*i.toDouble/max
-               val y = 0.5*math.Pi*j.toDouble/max
-
-                z1(i)(j) = f(x,y).toFloat
-                z2(i)(j) = psinc(x.toFloat,y.toFloat) .toFloat
+                val p = vw(Seq(i,j))
+                z1(i)(j) = f(p(0,0),p(1,0)).toFloat
+                z2(i)(j) = fRef(p(0,0),p(1,0)).toFloat
 
 
             }
 
         }
-
-
     }
+
+    val xx = qk.map(p => p(0,0))
+    val xMax = xx.max
+    val xMin = xx.min
+
+    val yy = qk.map(p => p(1,0))
+    val yMax = yy.max
+    val yMin = yy.min
+
+
+
     val sm: ArraySurfaceModel = new ArraySurfaceModel
-    sm.setValues(0f, 0.5f*math.Pi.toFloat, 0f, 0.5f*math.Pi.toFloat, max, z1, z2)
+    sm.setValues(xMin.toFloat, xMax.toFloat, yMin.toFloat, yMax.toFloat ,dimX, z1, z2)
     jsp.setModel(sm)
   }
   def psinc:Function2[Double,Double,Double] ={
-    (u,v) => math.sin(3.0*v*math.Pi)// math.sin(math.sqrt(u*u+v*v+1e-4))/math.sqrt(u*u+v*v+1e-4)
+    (u,v)=>{
+      math.sin(math.sqrt(u*u+v*v+1e-4))/math.sqrt(u*u+v*v+1e-4)
+    }
     //(u,v)=> 8.0
   }
 
@@ -63,13 +76,15 @@ object testNurbs2D {
       ) yield {
         val mt = new Matrix[Double](2,1)
         mt.zeros;
-        mt.set(0,0,0.5*math.Pi*h.toDouble/nSamplesX)
-        mt.set(1,0,0.5*math.Pi*k.toDouble/nSamplesY)
+        val v1 = -2.5*math.Pi + 5*math.Pi*h.toDouble/nSamplesX
+        val v2 = -2.5*math.Pi + 5*math.Pi*k.toDouble/nSamplesY
+        mt.set(0,0,v1)
+        mt.set(1,0,v2)
         mt
       }
         ).toSeq
 
-           a
+       a
 
   }
   def main(args:Array[String]){
@@ -77,8 +92,8 @@ object testNurbs2D {
 
 
 
-    val nSamplesX = 5
-    val nSamplesY= 5
+    val nSamplesX = 15
+    val nSamplesY= 15
     val qk = generateSamples(nSamplesX,nSamplesY)
 
 
@@ -91,18 +106,18 @@ object testNurbs2D {
       psinc(x,y)
     }).toArray
 
-    val order = 2
+    val order = 5
 
     val bspline = new Nurbs2D(qk,Array(order,order),Seq(nSamplesX,nSamplesY))
 
 
-    val nSamplesX2=5
-    val nSamplesY2=5
+    val nSamplesX2=25
+    val nSamplesY2=25
     val qk2 = generateSamples(nSamplesX2,nSamplesY2)
-    testFunc(bspline,z,qk2)
+    testFunc(bspline,z,qk2,nSamplesX2)
   }
 
-  def testFunc(bspline:Nurbs2DBase,z:Array[Double],qk:Seq[Matrix[Double]]){
+  def testFunc(bspline:Nurbs2DBase,z:Array[Double],qk:Seq[Matrix[Double]],dim:Int){
 
       bspline.solve(z);
 
@@ -125,7 +140,9 @@ object testNurbs2D {
 
     SwingUtilities.invokeLater(new Runnable {
       def run {
-        testSomething((x:Double,y:Double)=> bspline(bspline.getNormalizedCoord(x,0),bspline.getNormalizedCoord(y,1))(2,0),40)
+        val ff =
+          (x:Double,y:Double)=> bspline(bspline.getNormalizedCoord(x,0),bspline.getNormalizedCoord(y,1))(2,0)
+        testSomething(ff,psinc,dim,qk)
       }
     })
 

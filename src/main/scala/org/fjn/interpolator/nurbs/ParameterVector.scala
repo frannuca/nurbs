@@ -38,6 +38,7 @@ trait ParameterVector {
 
   lazy val parameterKnots: Seq[Seq[Double]] = {
 
+     viewQk
      (for(nD <- 0 until self.dim.length) yield{
         val nDim = self.dim(nD)
         val a = (for(n <- 0 until nDim) yield{
@@ -127,11 +128,11 @@ trait ParameterVectorCentripetal extends ParameterVector {
     protected def computParameters(axis:Seq[Double]):Seq[Double]={
               val N = axis.length
               val result: Seq[Double] =
-                Seq(0.0) ++
-              (for (n <- 1 until axis.length-1)
+
+              (for (n <- 0 until axis.length)
                yield {
-                 n.toDouble / N.toDouble
-              }).toSeq ++ Seq(1.0)
+                 n.toDouble / (N.toDouble-1)
+              }).toSeq
 
       result
     }

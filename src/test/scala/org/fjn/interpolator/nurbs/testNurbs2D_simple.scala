@@ -22,8 +22,8 @@ object testNurbs2D_simple {
       yield{
 
       val m = new Matrix[Double](2,1)
-      m.set(0,0,i.toDouble/(Ns-1).toDouble)
-      m.set(1,0,j.toDouble/(Ns-1).toDouble)
+      m.set(0,0,i.toDouble)
+      m.set(1,0,j.toDouble)
 
       (m,(i+j).toDouble)
     }
@@ -45,12 +45,12 @@ object testNurbs2D_simple {
 
     val vv = spline.viewTQk(Seq(Ns-1,0))
 
-  val err: IndexedSeq[Double] = for (i <- 0 to Ns;
-       j <- 0 to Ns)
+  val err: IndexedSeq[Double] = for (i <- 0 until Ns;
+       j <- 0 until Ns)
   yield{
 
-    val x0 = j.toDouble/Ns.toDouble
-    val y0 = i.toDouble/Ns.toDouble
+    val x0 = j.toDouble
+    val y0 = i.toDouble
     val u = spline.getNormalizedCoord(x0,0)
     val v = spline.getNormalizedCoord (y0,1)
     val aprox = spline(u,v)

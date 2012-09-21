@@ -22,11 +22,12 @@ trait KnotsVector {
         val auxSq2  = params.slice(s0,s1)
         val auxSq  = auxSq2 ++ (auxSq2.length until p+1).map(x => 1.0d)
 
-
         val v = auxSq.foldLeft(0.0d)((acc,v)=> acc+v)*1.0/numberOfItems.toDouble
+
         v
       }).toSeq ++
       (0 to p).map(i => 1.0d).toSeq
+
 
     a
   }

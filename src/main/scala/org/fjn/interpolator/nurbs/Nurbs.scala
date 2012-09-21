@@ -210,63 +210,36 @@ trait Nurbs2DBase
     dMean
   }
 
-//  def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
-//
-//    //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1
-//
-//    val vector = knotsVector(nCoord)
-//    val sz = vector.length - basisOrder(nCoord) - 1
-//
-//    var i = 0
-//    var found: Boolean = false
-//    var counter = 0
-//    while (!found && counter < sz) {
-//      if (t <= vector(counter)) {
-//        i = counter
-//        found = true
-//      }
-//      counter = counter + 1
-//    }
-//
-//    val resVector =
-//      if (found) {
-//        i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
-//      }
-//      else
-//        0 until vector.length
-//
-//    resVector.filter(c => c >= 0 && c < sz)
-//
-//
-//
-//  }
-def getBasisRange(nCoord:Int)(t:Double):Seq[Int]={
-  val vector = knotsVector(nCoord)
-  val sz = vector.length-basisOrder(nCoord)-1
+  def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
 
-  var i=0
-  var found:Boolean=false
-  var counter = 0
-  while(!found && counter < sz){
-    if (t<=vector(counter))
-    {
-      i = counter
-      found=true
+    //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1
+
+    val vector = knotsVector(nCoord)
+    val sz = vector.length - basisOrder(nCoord) - 1
+
+    var i = 0
+    var found: Boolean = false
+    var counter = 0
+    while (!found && counter < sz) {
+      if (t <= vector(counter)) {
+        i = counter
+        found = true
+      }
+      counter = counter + 1
     }
-    counter = counter + 1
+
+    val resVector =
+      if (found) {
+        i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
+      }
+      else
+        0 until vector.length
+
+    resVector.filter(c => c >= 0 && c < sz)
+
+
+
   }
-
-  val resVector =
-    if(found){
-      i-basisOrder(nCoord)-1 until i+basisOrder(nCoord)+1
-    }
-    else
-      0 until vector.length
-
-  resVector.filter(c => c >= 0 && c < sz)
-
-
-}
 }
 
 
@@ -290,7 +263,8 @@ class Nurbs2D(val qk:Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq
 
 
 
-    (x - minVal) / (maxVal - minVal)
+    val a = (x - minVal) / (maxVal - minVal)
+    a
 
 
   }
