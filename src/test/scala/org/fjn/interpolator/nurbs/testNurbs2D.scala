@@ -1,7 +1,6 @@
 package org.fjn.interpolator.nurbs
 
-import _root_.net.ericaro.surfaceplotter.JSurfacePanel
-import _root_.net.ericaro.surfaceplotter.surface.ArraySurfaceModel
+
 import org.fjn.interpolator.common.matrix.Matrix
 import scala.Array
 import javax.swing.{SwingUtilities, JFrame}
@@ -9,6 +8,8 @@ import java.awt.BorderLayout
 import java.util.Random
 import scala.collection.JavaConversions._
 import org.fjn.interpolator.common.MultiArrayView
+import net.ericaro.surfaceplotter.{JSurfacePanel}
+import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 
 object plotting{
 
