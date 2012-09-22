@@ -10,8 +10,13 @@ import java.util.Random
 import scala.collection.JavaConversions._
 import org.fjn.interpolator.common.MultiArrayView
 
+object plotting{
 
-object testNurbs2D {
+  val nSamplesX = 25
+  val nSamplesY= 25
+
+  val nSamplesX2=55
+  val nSamplesY2=55
 
   def testSomething(f:Function2[Double,Double,Double],fRef:Function2[Double,Double,Double],dimX:Int,qk:Seq[Matrix[Double]]) {
 
@@ -31,18 +36,18 @@ object testNurbs2D {
 
 
     val vw = new MultiArrayView[Matrix[Double]]( qk ,Seq(dimX,dimY))
-      for(i <- 0 until dimX) {
-        {
-            for (j <- 0 until dimY) {
+    for(i <- 0 until dimX) {
+      {
+        for (j <- 0 until dimY) {
 
-                val p = vw(Seq(i,j))
-                z1(i)(j) = f(p(0,0),p(1,0)).toFloat
-                z2(i)(j) = fRef(p(0,0),p(1,0)).toFloat
+          val p = vw(Seq(i,j))
+          z1(i)(j) = f(p(0,0),p(1,0)).toFloat
+          z2(i)(j) = fRef(p(0,0),p(1,0)).toFloat
 
-
-            }
 
         }
+
+      }
     }
 
     val xx = qk.map(p => p(0,0))
@@ -59,69 +64,41 @@ object testNurbs2D {
     sm.setValues(xMin.toFloat, xMax.toFloat, yMin.toFloat, yMax.toFloat ,dimX, z1, z2)
     jsp.setModel(sm)
   }
+
   def psinc:Function2[Double,Double,Double] ={
     (u,v)=>{
       math.sin(math.sqrt(u*u+v*v+1e-4))/math.sqrt(u*u+v*v+1e-4)
     }
-    //(u,v)=> 8.0
-  }
 
+
+  }
 
   def generateSamples(nSamplesX:Int,nSamplesY:Int):(Seq[Matrix[Double]])={
 
 
-      val a = (for(
-        k<- 0 until nSamplesY;
-        h <- 0 until nSamplesX
-      ) yield {
-        val mt = new Matrix[Double](2,1)
-        mt.zeros;
-        val v1 = -2.5*math.Pi + 5*math.Pi*h.toDouble/nSamplesX
-        val v2 = -2.5*math.Pi + 5*math.Pi*k.toDouble/nSamplesY
-        mt.set(0,0,v1)
-        mt.set(1,0,v2)
-        mt
-      }
-        ).toSeq
+    val middle = 8
+    val a = (for(
+      k<- 0 until nSamplesY;
+      h <- 0 until nSamplesX
+    ) yield {
+      val mt = new Matrix[Double](2,1)
+      mt.zeros;
+      val v1 = -0.5*middle*math.Pi + middle*math.Pi*h.toDouble/(nSamplesX-1)
+      val v2 = -0.5*middle*math.Pi + middle*math.Pi*k.toDouble/(nSamplesY-1)
+      mt.set(0,0,v1)
+      mt.set(1,0,v2)
+      mt
+    }
+      ).toSeq
 
-       a
+    a
 
   }
-  def main(args:Array[String]){
-
-
-
-
-    val nSamplesX = 15
-    val nSamplesY= 15
-    val qk = generateSamples(nSamplesX,nSamplesY)
-
-
-    val z =(for(q <- qk)
-    yield
-    {
-      val x= q(0,0)
-      val y =q(1,0)
-
-      psinc(x,y)
-    }).toArray
-
-    val order = 5
-
-    val bspline = new Nurbs2D(qk,Array(order,order),Seq(nSamplesX,nSamplesY))
-
-
-    val nSamplesX2=25
-    val nSamplesY2=25
-    val qk2 = generateSamples(nSamplesX2,nSamplesY2)
-    testFunc(bspline,z,qk2,nSamplesX2)
-  }
-
   def testFunc(bspline:Nurbs2DBase,z:Array[Double],qk:Seq[Matrix[Double]],dim:Int){
 
-      bspline.solve(z);
+    bspline.solve(z);
 
-      var sumError =
+    var sumError =
       qk.par.map( item =>{
         val u = bspline.getNormalizedCoord( item(0,0),0)
         val v = bspline.getNormalizedCoord( item(1,0),1)
@@ -136,7 +113,7 @@ object testNurbs2D {
       })
 
 
-      println("Total error ="+sumError.max)
+    println("Total error ="+sumError.max)
 
     SwingUtilities.invokeLater(new Runnable {
       def run {
@@ -146,7 +123,118 @@ object testNurbs2D {
       }
     })
 
-    }
+  }
+}
+
+object testNurbs2D {
+
+
+  def main(args:Array[String]){
+
+
+    import plotting._
+
+
+
+    val qk = generateSamples(nSamplesX,nSamplesY)
+
+
+    val z =(for(q <- qk)
+    yield
+    {
+      val x= q(0,0)
+      val y =q(1,0)
+
+      psinc(x,y)
+    }).toArray
+
+    val order = 3
+
+    val bspline = new Nurbs2D(qk,Array(order,order),Seq(nSamplesX,nSamplesY))
+
+
+
+    val qk2 = generateSamples(nSamplesX2,nSamplesY2)
+    testFunc(bspline,z,qk2,nSamplesX2)
+  }
+
+
+
+
+}
+
+
+object testNurbs2DChord {
+
+
+  def main(args:Array[String]){
+
+
+    import plotting._
+
+
+    val qk = generateSamples(nSamplesX,nSamplesY)
+
+
+    val z =(for(q <- qk)
+    yield
+    {
+      val x= q(0,0)
+      val y =q(1,0)
+
+      psinc(x,y)
+    }).toArray
+
+    val order = 3
+
+    val bspline = new Nurbs2DChord(qk,Array(order,order),Seq(nSamplesX,nSamplesY),1e-2)
+
+
+
+    val qk2 = generateSamples(nSamplesX2,nSamplesY2)
+    testFunc(bspline,z,qk2,nSamplesX2)
+  }
+
+
+
+
+}
+
+
+object testNurbs2DCentripetal {
+
+
+  def main(args:Array[String]){
+
+
+    import plotting._
+
+
+
+    val qk = generateSamples(nSamplesX,nSamplesY)
+
+
+    val z =(for(q <- qk)
+    yield
+    {
+      val x= q(0,0)
+      val y =q(1,0)
+
+      psinc(x,y)
+    }).toArray
+
+    val order = 3
+
+    val bspline = new Nurbs2DCentripetal(qk,Array(order,order),Seq(nSamplesX,nSamplesY),1e-2)
+
+
+
+
+    val qk2 = generateSamples(nSamplesX2,nSamplesY2)
+    testFunc(bspline,z,qk2,nSamplesX2)
+  }
+
+
 
 
 }
