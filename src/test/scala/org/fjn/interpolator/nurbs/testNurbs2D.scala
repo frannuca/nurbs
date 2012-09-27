@@ -1,13 +1,22 @@
 package org.fjn.interpolator.nurbs
 
+<<<<<<< HEAD
+=======
+
+import org.fjn.interpolator.common.matrix.Matrix
+>>>>>>> 0d74ae912ef41be5e7313726c3b41d5df7fe51a5
 import scala.Array
 import javax.swing.{SwingUtilities, JFrame}
 import java.awt.BorderLayout
 import java.util.Random
 import scala.collection.JavaConversions._
 import org.fjn.interpolator.common.MultiArrayView
+<<<<<<< HEAD
 import net.ericaro.surfaceplotter.JSurfacePanel
 import org.fjn.matrix.Matrix
+=======
+import net.ericaro.surfaceplotter.{JSurfacePanel}
+>>>>>>> 0d74ae912ef41be5e7313726c3b41d5df7fe51a5
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 
 object plotting{
