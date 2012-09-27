@@ -1,22 +1,22 @@
 package org.fjn.interpolator.nurbs
 
-import _root_.net.ericaro.surfaceplotter.JSurfacePanel
-import _root_.net.ericaro.surfaceplotter.surface.ArraySurfaceModel
-import org.fjn.interpolator.common.matrix.Matrix
 import scala.Array
 import javax.swing.{SwingUtilities, JFrame}
 import java.awt.BorderLayout
 import java.util.Random
 import scala.collection.JavaConversions._
 import org.fjn.interpolator.common.MultiArrayView
+import net.ericaro.surfaceplotter.JSurfacePanel
+import org.fjn.matrix.Matrix
+import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 
 object plotting{
 
   val nSamplesX = 25
   val nSamplesY= 25
 
-  val nSamplesX2=55
-  val nSamplesY2=55
+  val nSamplesX2=75
+  val nSamplesY2=75
 
   def testSomething(f:Function2[Double,Double,Double],fRef:Function2[Double,Double,Double],dimX:Int,qk:Seq[Matrix[Double]]) {
 

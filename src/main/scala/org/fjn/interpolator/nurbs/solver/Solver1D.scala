@@ -1,7 +1,7 @@
 package org.fjn.interpolator.nurbs.solver
 
 import org.fjn.interpolator.nurbs.{Basis, BasisFunctionOrder, ControlPoint, ParameterVector}
-import org.fjn.interpolator.common.matrix.Matrix
+import org.fjn.matrix.Matrix
 
 
 /**
@@ -50,7 +50,7 @@ trait Solver1D {
     var mSol = new Matrix[Double](numberOfSamples, dim.length + 1)
     //computing the contol points:
     for (m <- listOfMatrix) {
-      m.invert()
+      m.invert
       rightM = m * rightM
     }
 

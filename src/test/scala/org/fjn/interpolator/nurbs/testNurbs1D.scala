@@ -1,9 +1,9 @@
 package org.fjn.interpolator.nurbs
 
 import java.io.{InputStreamReader, BufferedReader}
-import org.fjn.interpolator.common.matrix._
 import collection.immutable.IndexedSeq
 import collection.immutable
+import org.fjn.matrix.Matrix
 
 /**
  * Created with IntelliJ IDEA.

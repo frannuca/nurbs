@@ -2,8 +2,8 @@ package org.fjn.interpolator.nurbs.solver
 import org.fjn.interpolator.nurbs.{Basis,ParameterVector,ControlPoint,BasisFunctionOrder}
 
 
-import org.fjn.interpolator.common.matrix.Matrix
 import org.fjn.interpolator.common.MultiArrayView
+import org.fjn.matrix.Matrix
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +35,7 @@ trait Solver2D {
         qXMatrix.set(i, j, vv)
       }
     }
-    qXMatrix.invert()
+    qXMatrix.invert
 
     val sampleSize = 3 //(x,y,z)
 
@@ -95,7 +95,7 @@ trait Solver2D {
       }
     }
 
-    qXMatrix.invert()
+    qXMatrix.invert
 
 
 

@@ -1,7 +1,7 @@
 package org.fjn.interpolator.nurbs
 
 import org.fjn.interpolator.common.{Point, MultiArrayView}
-import org.fjn.interpolator.common.matrix.Matrix
+import org.fjn.matrix.Matrix
 
 
 /**

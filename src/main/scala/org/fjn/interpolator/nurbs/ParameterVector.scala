@@ -3,7 +3,7 @@ package org.fjn.interpolator.nurbs
 import org.fjn.interpolator.common.{MultiArrayView, Point}
 import collection.immutable.IndexedSeq
 import collection.immutable
-import org.fjn.interpolator.common.matrix.Matrix
+import org.fjn.matrix.Matrix
 
 /**
  * Created by fjn army of one.

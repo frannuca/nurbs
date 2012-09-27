@@ -1,6 +1,6 @@
 package org.fjn.interpolator.nurbs
 
-import org.fjn.interpolator.common.matrix.Matrix
+import org.fjn.matrix.Matrix
 import collection.immutable.IndexedSeq
 import org.fjn.interpolator.common.MultiArrayView
 
