@@ -1,8 +1,8 @@
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import sbt._
 import Keys._
-
-
-//import com.github.retronym.SbtOneJar
+import scalariform.formatter.preferences._
 
 object BuildSettings {
 
@@ -11,7 +11,18 @@ object BuildSettings {
   val buildVersion      = "1.0.0"
   val buildScalaVersion = "2.9.2"
 
-  val buildSettings = Defaults.defaultSettings ++ Seq(
+  ScalariformKeys.preferences := FormattingPreferences()
+    .setPreference(AlignParameters, true)
+    .setPreference(AlignSingleLineCaseStatements, true)
+    .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 120)
+    .setPreference(CompactControlReadability, false)
+    .setPreference(PreserveDanglingCloseParenthesis, true)
+    .setPreference(FormatXml, false)
+    .setPreference(PreserveSpaceBeforeArguments, true)
+    .setPreference(IndentWithTabs, false)
+    .setPreference(SpacesWithinPatternBinders, false)
+
+  val buildSettings = Defaults.defaultSettings ++ SbtScalariform.scalariformSettings ++ Seq(
     organization := buildOrganization,
     version      := buildVersion,
     scalaVersion := buildScalaVersion //,
