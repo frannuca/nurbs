@@ -1,20 +1,17 @@
 package org.fjn.interpolator.nurbs
 
 import org.fjn.matrix.Matrix
-import solver.{Solver2D, Solver1D}
-
-
+import solver.{ Solver2D, Solver1D }
 
 trait Nurbs1DBase
-  extends ControlPoint
-  with ParameterVector
-  with BasisFunctionOrder
-  with KnotsVector
-  with Basis
-  with Solver1D {
+    extends ControlPoint
+    with ParameterVector
+    with BasisFunctionOrder
+    with KnotsVector
+    with Basis
+    with Solver1D {
 
-
-  val tolerance:Double
+  val tolerance: Double
   lazy val dim = Seq(qk.length)
 
   def apply(t: Double): Matrix[Double] = {
@@ -32,22 +29,17 @@ trait Nurbs1DBase
 
   }
 
-
-
   /**
    *  TODO: do linear access to point in order to have fast coordinate look-up
    *  Correct non equally distribuions --> 1D coordinate look up is buggy(infinite loops)
-   * */
+   */
   def getNormalizedCoord(x: Double): Double = {
 
-
-
-    def nurb = (x:Double) => this.apply(x)(0,0)
+    def nurb = (x: Double) => this.apply(x)(0, 0)
 
     var dLow = 0.0
     var dHigh = 1.0
     var dMean = 0.5
-
 
     var mean = nurb(dMean)
     var counter = 0
@@ -55,15 +47,12 @@ trait Nurbs1DBase
     while (!found) {
       if (math.abs(x - mean) < tolerance) {
         found = true
-      }
-      else {
+      } else {
         if (x < mean) {
           dHigh = dMean
-        }
-        else if (x > mean) {
+        } else if (x > mean) {
           dLow = dMean
-        }
-        else
+        } else
           found = true
 
         dMean = (dHigh + dLow) * 0.5
@@ -76,8 +65,6 @@ trait Nurbs1DBase
       if (counter > 500)
         found = true
     }
-
-
 
     dMean
   }
@@ -100,49 +87,42 @@ trait Nurbs1DBase
     val resVector =
       if (found) {
         i - basisOrder(0) - 1 until i + basisOrder(0) + 1
-      }
-      else
+      } else
         0 until vector.length
 
     resVector.filter(c => c >= 0 && c < sz)
 
-
   }
 }
 
+class Nurbs1DEqually(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val xMax: Double, val xMin: Double)
+    extends Nurbs1DBase with ParameterVectorEqually {
 
-class Nurbs1DEqually(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val xMax:Double,val xMin:Double)
-extends  Nurbs1DBase with ParameterVectorEqually{
-
-  val tolerance:Double = 0
+  val tolerance: Double = 0
   override def getNormalizedCoord(x: Double): Double = {
-
 
     (x - xMin) / (xMax - xMin)
 
-
   }
 }
 
-class Nurbs1DChord(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val tolerance:Double)
-  extends  Nurbs1DBase with ParameterVectorChord{
+class Nurbs1DChord(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val tolerance: Double)
+    extends Nurbs1DBase with ParameterVectorChord {
 
 }
 
-class Nurbs1DCentripetal(val qk: Seq[Matrix[Double]],val basisOrder: Seq[Int],val tolerance:Double)
-  extends  Nurbs1DBase with ParameterVectorCentripetal{
+class Nurbs1DCentripetal(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val tolerance: Double)
+    extends Nurbs1DBase with ParameterVectorCentripetal {
 
 }
-
 
 trait Nurbs2DBase
-  extends ControlPoint
-  with ParameterVector
-  with BasisFunctionOrder
-  with KnotsVector
-  with Basis
-  with Solver2D {
-
+    extends ControlPoint
+    with ParameterVector
+    with BasisFunctionOrder
+    with KnotsVector
+    with Basis
+    with Solver2D {
 
   def tolerance: Double
 
@@ -164,8 +144,6 @@ trait Nurbs2DBase
     sum
   }
 
-
-
   def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
     def nurb: (Double => Double) = x => {
@@ -176,22 +154,18 @@ trait Nurbs2DBase
     var dHigh = 1.0
     var dMean = 0.5
 
-
     var mean = nurb(dMean)
     var counter = 0
     var found: Boolean = false
     while (!found) {
       if (math.abs(x - mean) < tolerance) {
         found = true
-      }
-      else {
+      } else {
         if (x < mean) {
           dHigh = dMean
-        }
-        else if (x > mean) {
+        } else if (x > mean) {
           dLow = dMean
-        }
-        else
+        } else
           found = true
 
         dMean = (dHigh + dLow) * 0.5
@@ -204,8 +178,6 @@ trait Nurbs2DBase
       if (counter > 500)
         found = true
     }
-
-
 
     dMean
   }
@@ -231,58 +203,43 @@ trait Nurbs2DBase
     val resVector =
       if (found) {
         i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
-      }
-      else
+      } else
         0 until vector.length
 
     resVector.filter(c => c >= 0 && c < sz)
 
-
-
   }
 }
 
+class Nurbs2D(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+    extends Nurbs2DBase with ParameterVectorEqually {
 
-class Nurbs2D(val qk:Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
-  extends Nurbs2DBase with ParameterVectorEqually {
+  val maxValX = qk.map(v => v(0, 0)).max
+  val maxValY = qk.map(v => v(1, 0)).max
 
-
-  val maxValX = qk.map(v => v(0,0)).max
-  val maxValY = qk.map(v => v(1,0)).max
-
-
-  val minValX = qk.map(v => v(0,0)).min
-  val minValY = qk.map(v => v(1,0)).min
-
+  val minValX = qk.map(v => v(0, 0)).min
+  val minValY = qk.map(v => v(1, 0)).min
 
   override def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
-
-    var maxVal = if(nCoord == 0) maxValX else maxValY
-    var minVal = if(nCoord == 0) minValX else minValY
-
-
+    var maxVal = if (nCoord == 0) maxValX else maxValY
+    var minVal = if (nCoord == 0) minValX else minValY
 
     val a = (x - minVal) / (maxVal - minVal)
     a
 
-
   }
 }
 
-
 class Nurbs2DChord(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
-  extends ParameterVectorChord with Nurbs2DBase {
-
+    extends ParameterVectorChord with Nurbs2DBase {
 
   println("Nurbs2DChord")
 
 }
 
-
 class Nurbs2DCentripetal(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
-  extends ControlPoint with ParameterVectorCentripetal with Nurbs2DBase {
-
+    extends ControlPoint with ParameterVectorCentripetal with Nurbs2DBase {
 
   println("Nurbs2DCentripetal")
 

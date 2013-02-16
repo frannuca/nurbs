@@ -1,8 +1,7 @@
 package org.fjn.interpolator.nurbs.solver
 
-import org.fjn.interpolator.nurbs.{Basis, BasisFunctionOrder, ControlPoint, ParameterVector}
+import org.fjn.interpolator.nurbs.{ Basis, BasisFunctionOrder, ControlPoint, ParameterVector }
 import org.fjn.matrix.Matrix
-
 
 /**
  * Created by fjn
@@ -11,7 +10,6 @@ import org.fjn.matrix.Matrix
  * Time: 7:41 AM
  * To change this template use File | Settings | File Templates.
  */
-
 
 trait Solver1D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>
@@ -23,8 +21,7 @@ trait Solver1D {
   def solve(z: Array[Double]): Boolean = {
 
     val listOfMatrix =
-      for (k <- 0 until dim.length)
-      yield {
+      for (k <- 0 until dim.length) yield {
         val qMatrix = new Matrix[Double](numberOfSamples, numberOfSamples)
         for (i <- 0 until numberOfSamples) {
           for (j <- 0 until numberOfSamples) {
@@ -55,7 +52,6 @@ trait Solver1D {
     }
 
     pk = rightM
-
 
     true
   }
