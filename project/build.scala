@@ -11,24 +11,25 @@ object BuildSettings {
   val buildVersion      = "1.0.0"
   val buildScalaVersion = "2.9.2"
 
-  val buildSettings = Defaults.defaultSettings ++ Seq (
+  val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := buildOrganization,
     version      := buildVersion,
-    scalaVersion := buildScalaVersion//,
+    scalaVersion := buildScalaVersion //,
   )
 }
 
 object Resolvers {
-
-
+  "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
 }
 
 object Dependencies {
 
+  def SurfacePlotter = "net.ericaro" % "surfaceplotter" % "2.0.2-SNAPSHOT"
 
 }
 
 object PythiaBuild extends Build {
+
   import Resolvers._
   import Dependencies._
   import BuildSettings._
@@ -36,13 +37,14 @@ object PythiaBuild extends Build {
   /**
    * top layer  pythia
    */
-  lazy val pythia = Project (
+  lazy val pythia = Project(
     "nurbs",
-    file ("."),
-    settings = buildSettings++ Seq (resolvers :=  Seq(), libraryDependencies ++=Seq())
+    file("."),
+    settings = buildSettings ++ Seq(
+      resolvers := Seq(Resolver.sonatypeRepo("snapshots")),
+      libraryDependencies ++= Seq(SurfacePlotter))
 
   ) //aggregate (optimizer,ia, fjn.fjn.fjn.pythia.pricers)
-
 
 
 }
