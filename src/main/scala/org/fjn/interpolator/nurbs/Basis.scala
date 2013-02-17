@@ -40,7 +40,6 @@ trait Basis {
 
   private def N(knots: Array[Seq[Double]])(i: Int, p: Int, nCoord: Int)(u: Double): Double = {
     if (p == 0) {
-
       if (knots(nCoord)(i) <= u && u < knots(nCoord)(i + 1))
         1.0
       else if (knots(nCoord)(i + 1) == 1 && u == 1)
@@ -48,7 +47,7 @@ trait Basis {
       else
         0.0
     } else {
-      val denom1 = (knots(nCoord)(i + p) - knots(nCoord)(i));
+      val denom1 = (knots(nCoord)(i + p) - knots(nCoord)(i))
       val denom2 = (knots(nCoord)(i + p + 1) - knots(nCoord)(i + 1))
       val num1 = (u - knots(nCoord)(i))
       val num2 = (knots(nCoord)(i + p + 1) - u)

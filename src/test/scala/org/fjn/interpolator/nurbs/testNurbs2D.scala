@@ -20,7 +20,7 @@ object plotting {
   val nSamplesX2 = 75
   val nSamplesY2 = 75
 
-  def testSomething(f: Function2[Double, Double, Double], fRef: Function2[Double, Double, Double], dimX: Int, qk: Seq[Matrix[Double]]) {
+  def testSomething(f: (Double, Double) => Double, fRef: (Double, Double) => Double, dimX: Int, qk: Seq[Matrix[Double]]) {
 
     val dimY = dimX
 
@@ -89,9 +89,9 @@ object plotting {
   }
   def testFunc(bspline: Nurbs2DBase, z: Array[Double], qk: Seq[Matrix[Double]], dim: Int) {
 
-    bspline.solve(z);
+    bspline.solve(z)
 
-    var sumError =
+    val sumError =
       qk.par.map(item => {
         val u = bspline.getNormalizedCoord(item(0, 0), 0)
         val v = bspline.getNormalizedCoord(item(1, 0), 1)

@@ -4,14 +4,6 @@ import org.fjn.interpolator.nurbs.{ Basis, ParameterVector, ControlPoint, BasisF
 import org.fjn.interpolator.common.MultiArrayView
 import org.fjn.matrix.Matrix
 
-/**
- * Created by IntelliJ IDEA.
- * User: fran
- * Date: 5/9/12
- * Time: 8:08 AM
- * To change this template use File | Settings | File Templates.
- */
-
 trait Solver2D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>
 
@@ -49,8 +41,8 @@ trait Solver2D {
 
         //sample vector(right side of the system):
 
-        val f: Function0[Matrix[Double]] = () => {
-          var rightM = new Matrix[Double](dim(0), sampleSize)
+        val f: () => Matrix[Double] = () => {
+          val rightM = new Matrix[Double](dim(0), sampleSize)
           for (i <- 0 until dim(0)) {
             val auxPos = Seq(i, l)
             val posq = viewer_original(auxPos)
@@ -78,7 +70,7 @@ trait Solver2D {
 
     val viewerZ = new MultiArrayView[Double](z, dim)
 
-    val Rl = SolveOnU(z, viewTQk, viewQk, viewerZ);
+    val Rl = SolveOnU(z, viewTQk, viewQk, viewerZ)
 
     val qXMatrix = new Matrix[Double](dim(1), dim(1))
     for (i <- 0 until dim(1)) {
@@ -98,7 +90,7 @@ trait Solver2D {
         //sample vector(right side of the system):
         () =>
           {
-            var rightM = new Matrix[Double](dim(1), pointDimension)
+            val rightM = new Matrix[Double](dim(1), pointDimension)
             for (i <- 0 until dim(1)) {
               for (j <- 0 until pointDimension)
                 rightM.set(i, j, Rl(i)(k, j))
