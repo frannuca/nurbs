@@ -10,6 +10,7 @@ import org.fjn.interpolator.common.MultiArrayView
 import net.ericaro.surfaceplotter.{ JSurfacePanel }
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 import org.fjn.matrix.Matrix
+import scala.math._
 
 object plotting {
 
@@ -62,12 +63,8 @@ object plotting {
     jsp.setModel(sm)
   }
 
-  def psinc: Function2[Double, Double, Double] = {
-    (u, v) =>
-      {
-        math.sin(math.sqrt(u * u + v * v + 1e-4)) / math.sqrt(u * u + v * v + 1e-4)
-      }
-
+  def psinc(u: Double, v: Double): Double = {
+    sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4)
   }
 
   def generateSamples(nSamplesX: Int, nSamplesY: Int): (Seq[Matrix[Double]]) = {
@@ -79,8 +76,8 @@ object plotting {
     ) yield {
       val mt = new Matrix[Double](2, 1)
       mt.zeros;
-      val v1 = -0.5 * middle * math.Pi + middle * math.Pi * h.toDouble / (nSamplesX - 1)
-      val v2 = -0.5 * middle * math.Pi + middle * math.Pi * k.toDouble / (nSamplesY - 1)
+      val v1 = -0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)
+      val v2 = -0.5 * middle * Pi + middle * Pi * k.toDouble / (nSamplesY - 1)
       mt.set(0, 0, v1)
       mt.set(1, 0, v2)
       mt
@@ -104,7 +101,7 @@ object plotting {
         val z = ax(2, 0)
         val r = psinc(item(0, 0), item(1, 0))
 
-        math.abs(z - r)
+        abs(z - r)
       })
 
     println("Total error =" + sumError.max)
