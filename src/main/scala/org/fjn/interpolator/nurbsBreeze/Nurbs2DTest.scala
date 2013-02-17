@@ -3,7 +3,6 @@ package org.fjn.interpolator.nurbsBreeze
 import math._
 import breeze.linalg._
 import collection.immutable.IndexedSeq
-import org.fjn.interpolator.nurbs.Nurbs2D
 
 object Nurbs2DTest {
 
