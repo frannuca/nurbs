@@ -1,8 +1,10 @@
 package org.fjn.interpolator.nurbs
-import collection.Seq
+import collection.{ immutable, Seq }
 
 /**
  * this trait hosts the vector knot which contains the list of parameter per coordinate
+ *  Nurbs need to define a series of points in the normalized spaced (from 0 to 1) which define the reference
+ * points for constructing the basis functions of order p.
  *
  */
 trait KnotsVector {
