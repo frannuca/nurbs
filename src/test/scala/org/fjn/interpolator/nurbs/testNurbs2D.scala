@@ -1,5 +1,6 @@
 package org.fjn.interpolator.nurbs
 
+import instance.{ Nurbs2DBase, Nurbs2DEqually, Nurbs2DChord, Nurbs2DCentripetal }
 import scala.Array
 import javax.swing.{ SwingUtilities, JFrame }
 import java.awt.BorderLayout
@@ -134,7 +135,7 @@ object testNurbs2D {
 
     val order = 3
 
-    val bspline = new Nurbs2D(qk, Array(order, order), Seq(nSamplesX, nSamplesY))
+    val bspline = new Nurbs2DEqually(qk, Array(order, order), Seq(nSamplesX, nSamplesY))
 
     val qk2 = generateSamples(nSamplesX2, nSamplesY2)
     testFunc(bspline, z, qk2, nSamplesX2)

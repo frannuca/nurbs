@@ -4,7 +4,7 @@ package org.fjn.interpolator.common
  * Helper class to facilitate the access to linear vector of matrices representing 2D grids
  * @param storage: sequence of  items representing a n-D grid structure
  * @param dimensions number of samples per dimension. Each dimension in the grid contains an homogeneous number of samples
- *                   per slice. This information is passed through this parameter
+ *                   per slice. This information is passed through this instance
  * @tparam T: Type of item. Typically we will have double or Matrix[Double] types
  */
 class MultiArrayView[T](val storage: Seq[T], val dimensions: Seq[Int]) {

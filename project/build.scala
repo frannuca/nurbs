@@ -36,6 +36,7 @@ object Resolvers {
 object Dependencies {
 
   def SurfacePlotter = "net.ericaro" % "surfaceplotter" % "2.0.2-SNAPSHOT"
+  val matrixdep = "org.fjn" % "matrix_2.9.2" % "1.0.0"
 
   val breezeVersion = "0.2-SNAPSHOT"
 
@@ -62,7 +63,7 @@ object PythiaBuild extends Build {
     file("."),
     settings = buildSettings ++ Seq(
       resolvers := Seq(Resolver.sonatypeRepo("snapshots")),
-      libraryDependencies ++= Seq(SurfacePlotter, BreezeMath, BreezeLearn, BreezeProcess, BreezeViz))
+      libraryDependencies ++= Seq(SurfacePlotter, BreezeMath, BreezeLearn, BreezeProcess, BreezeViz,matrixdep))
 
   ) //aggregate (optimizer,ia, fjn.fjn.fjn.pythia.pricers)
 

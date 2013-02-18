@@ -4,6 +4,7 @@ import java.io.{ InputStreamReader, BufferedReader }
 import collection.immutable.IndexedSeq
 import collection.immutable
 import org.fjn.matrix.Matrix
+import instance.{ Nurbs1DBase, Nurbs1DEqually, Nurbs1DChord, Nurbs1DCentripetal }
 
 /**
  * Created with IntelliJ IDEA.

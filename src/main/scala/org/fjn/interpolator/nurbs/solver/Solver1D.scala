@@ -1,7 +1,7 @@
 package org.fjn.interpolator.nurbs.solver
 
-import org.fjn.interpolator.nurbs.{ Basis, BasisFunctionOrder, ControlPoint, ParameterVector }
 import org.fjn.matrix.Matrix
+import org.fjn.interpolator.basis.{ ParameterVector, BasisFunctionOrder, Basis, ControlPoint }
 
 /**
  * Created by fjn

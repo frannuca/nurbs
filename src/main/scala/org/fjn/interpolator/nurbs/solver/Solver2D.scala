@@ -1,8 +1,8 @@
 package org.fjn.interpolator.nurbs.solver
-import org.fjn.interpolator.nurbs.{ Basis, ParameterVector, ControlPoint, BasisFunctionOrder }
 
 import org.fjn.interpolator.common.MultiArrayView
 import org.fjn.matrix.Matrix
+import org.fjn.interpolator.basis.{ ParameterVector, BasisFunctionOrder, Basis, ControlPoint }
 
 trait Solver2D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>

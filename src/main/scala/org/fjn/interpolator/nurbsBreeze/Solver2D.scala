@@ -1,7 +1,7 @@
 //package org.fjn.interpolator.nurbsBreeze
 //
 //object Solver2D {
-//  def SolveOnU(nurbs:Nurbs2D, z: Seq[Double]/*, viewer_norm: MultiArrayView[Matrix[Double]],
+//  def SolveOnU(nurbs:Nurbs2DEqually, z: Seq[Double]/*, viewer_norm: MultiArrayView[Matrix[Double]],
 //    viewer_original: MultiArrayView[Matrix[Double]], viewerZ: MultiArrayView[Double]*/): Seq[Matrix[Double]] = {
 //
 //    //Preparing the matrix for constant y-slices:
