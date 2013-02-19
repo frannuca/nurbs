@@ -40,7 +40,7 @@ trait ParameterVector {
       val nDim = self.dim(nD)
       val a = (for (n <- 0 until nDim) yield {
         val sq: Seq[Int] = genSeq(n, nD, self.dim.length)
-        val a: DenseMatrix[Double] = self.viewQk(sq)
+        val a: DenseMatrix[Double] = self.viewQk(sq).copy///it is better to give a copy to prevent modifications of the local parameter axis
         a
       }).toSeq
 

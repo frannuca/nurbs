@@ -5,13 +5,6 @@ import collection.immutable.IndexedSeq
 import org.fjn.interpolator.common.MultiArrayView
 import breeze.linalg.DenseMatrix
 
-/**
- * Created with IntelliJ IDEA.
- * User: fran
- * Date: 9/16/12
- * Time: 12:25 PM
- * To change this template use File | Settings | File Templates.
- */
 object testNurbs2D_simple {
 
   def main(args: Array[String]) {
