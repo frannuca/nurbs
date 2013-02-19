@@ -1,9 +1,9 @@
 package org.fjn.interpolator.nurbs
 
 import instance.Nurbs2DEqually
-import org.fjn.matrix.Matrix
 import collection.immutable.IndexedSeq
 import org.fjn.interpolator.common.MultiArrayView
+import breeze.linalg.DenseMatrix
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,14 +23,14 @@ object testNurbs2D_simple {
         i <- 0 until Ns
       ) yield {
 
-        val m = new Matrix[Double](2, 1)
-        m.set(0, 0, i.toDouble)
-        m.set(1, 0, j.toDouble)
+        val m = new DenseMatrix[Double](2, 1)
+        m(0, 0) = i.toDouble
+        m(1, 0) = j.toDouble
 
         (m, (i + j).toDouble)
       }
 
-    val vw = new MultiArrayView[(Matrix[Double], Double)](R, Seq(Ns, Ns))
+    val vw = new MultiArrayView[(DenseMatrix[Double], Double)](R, Seq(Ns, Ns))
     val _0_0 = vw(Seq(0, 0))
     val _0_3 = vw(Seq(0, 3))
     val _3_3 = vw(Seq(3, 3))

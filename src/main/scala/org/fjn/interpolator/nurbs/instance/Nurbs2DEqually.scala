@@ -1,9 +1,9 @@
 package org.fjn.interpolator.nurbs.instance
 
-import org.fjn.matrix.Matrix
 import org.fjn.interpolator.basis.ParameterVectorEqually
+import breeze.linalg.DenseMatrix
 
-class Nurbs2DEqually(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DEqually(val qk: Seq[DenseMatrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
     extends Nurbs2DBase with ParameterVectorEqually {
 
   val maxValX = qk.map(v => v(0, 0)).max

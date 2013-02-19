@@ -1,10 +1,9 @@
 package org.fjn.interpolator.nurbs
 
-import java.io.{ InputStreamReader, BufferedReader }
-import collection.immutable.IndexedSeq
 import collection.immutable
-import org.fjn.matrix.Matrix
+
 import instance.{ Nurbs1DBase, Nurbs1DEqually, Nurbs1DChord, Nurbs1DCentripetal }
+import breeze.linalg.DenseMatrix
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,16 +23,16 @@ object testNurbs1D {
     val qk = (0 until 1000).par.map(n => {
       val x = n.toDouble / 1000.0
       val z = func(x)
-      val m = new Matrix[Double](2, 1)
-      m.set(0, 0, x)
-      m.set(1, 0, z)
+      val m = new DenseMatrix[Double](2, 1)
+      m(0, 0) = x
+      m(1, 0) = z
       m
     })
 
     val order = 1
-    val xAxis: immutable.Seq[Matrix[Double]] = qk.par.map(v => {
-      val o = new Matrix[Double](1, 1);
-      o.set(0, 0, v(0, 0))
+    val xAxis: immutable.Seq[DenseMatrix[Double]] = qk.par.map(v => {
+      val o = new DenseMatrix[Double](1, 1);
+      o(0, 0) = v(0, 0)
       o
     }
     ).seq.toSeq

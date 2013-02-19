@@ -10,8 +10,8 @@ import org.fjn.interpolator.common.MultiArrayView
 
 import net.ericaro.surfaceplotter.{ JSurfacePanel }
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
-import org.fjn.matrix.Matrix
 import scala.math._
+import breeze.linalg.DenseMatrix
 
 object plotting {
 
@@ -21,7 +21,7 @@ object plotting {
   val nSamplesX2 = 75
   val nSamplesY2 = 75
 
-  def testSomething(f: (Double, Double) => Double, fRef: (Double, Double) => Double, dimX: Int, qk: Seq[Matrix[Double]]) {
+  def testSomething(f: (Double, Double) => Double, fRef: (Double, Double) => Double, dimX: Int, qk: Seq[DenseMatrix[Double]]) {
 
     val dimY = dimX
 
@@ -37,7 +37,7 @@ object plotting {
     val z1 = Array.ofDim[Float](dimX, dimY)
     val z2 = Array.ofDim[Float](dimX, dimY)
 
-    val vw = new MultiArrayView[Matrix[Double]](qk, Seq(dimX, dimY))
+    val vw = new MultiArrayView[DenseMatrix[Double]](qk, Seq(dimX, dimY))
     for (i <- 0 until dimX) {
       {
         for (j <- 0 until dimY) {
@@ -68,19 +68,19 @@ object plotting {
     sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4)
   }
 
-  def generateSamples(nSamplesX: Int, nSamplesY: Int): (Seq[Matrix[Double]]) = {
+  def generateSamples(nSamplesX: Int, nSamplesY: Int): (Seq[DenseMatrix[Double]]) = {
 
     val middle = 8
     val a = (for (
       k <- 0 until nSamplesY;
       h <- 0 until nSamplesX
     ) yield {
-      val mt = new Matrix[Double](2, 1)
-      mt.zeros;
+      val mt = new DenseMatrix[Double](2, 1)
+
       val v1 = -0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)
       val v2 = -0.5 * middle * Pi + middle * Pi * k.toDouble / (nSamplesY - 1)
-      mt.set(0, 0, v1)
-      mt.set(1, 0, v2)
+      mt(0, 0) = v1
+      mt(1, 0) = v2
       mt
     }
     ).toSeq
@@ -88,7 +88,7 @@ object plotting {
     a
 
   }
-  def testFunc(bspline: Nurbs2DBase, z: Array[Double], qk: Seq[Matrix[Double]], dim: Int) {
+  def testFunc(bspline: Nurbs2DBase, z: Array[Double], qk: Seq[DenseMatrix[Double]], dim: Int) {
 
     bspline.solve(z)
 

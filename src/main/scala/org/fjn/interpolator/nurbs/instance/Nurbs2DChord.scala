@@ -1,7 +1,7 @@
 package org.fjn.interpolator.nurbs.instance
 
-import org.fjn.matrix.Matrix
 import org.fjn.interpolator.basis.ParameterVectorChord
+import breeze.linalg.DenseMatrix
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,7 +10,7 @@ import org.fjn.interpolator.basis.ParameterVectorChord
  * Time: 23:28
  * To change this template use File | Settings | File Templates.
  */
-class Nurbs2DChord(val qk: Seq[Matrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
+class Nurbs2DChord(val qk: Seq[DenseMatrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-4)
     extends ParameterVectorChord with Nurbs2DBase {
 
   println("Nurbs2DChord")

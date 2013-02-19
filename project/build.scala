@@ -36,7 +36,6 @@ object Resolvers {
 object Dependencies {
 
   def SurfacePlotter = "net.ericaro" % "surfaceplotter" % "2.0.2-SNAPSHOT"
-  val matrixdep = "org.fjn" % "matrix_2.9.2" % "1.0.0"
 
   val breezeVersion = "0.2-SNAPSHOT"
 
@@ -47,6 +46,8 @@ object Dependencies {
   def BreezeProcess = "org.scalanlp" %% "breeze-process" % breezeVersion
 
   def BreezeViz = "org.scalanlp" %% "breeze-viz" % breezeVersion
+
+  def Blas = "org.scalanlp" % "jblas" % "1.2.1"
 }
 
 object PythiaBuild extends Build {
@@ -63,7 +64,7 @@ object PythiaBuild extends Build {
     file("."),
     settings = buildSettings ++ Seq(
       resolvers := Seq(Resolver.sonatypeRepo("snapshots")),
-      libraryDependencies ++= Seq(SurfacePlotter, BreezeMath, BreezeLearn, BreezeProcess, BreezeViz,matrixdep))
+      libraryDependencies ++= Seq(SurfacePlotter, BreezeMath, BreezeLearn, BreezeProcess, BreezeViz,Blas))
 
   ) //aggregate (optimizer,ia, fjn.fjn.fjn.pythia.pricers)
 

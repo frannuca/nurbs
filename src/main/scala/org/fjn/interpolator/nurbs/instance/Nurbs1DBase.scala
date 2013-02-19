@@ -1,9 +1,9 @@
 package org.fjn.interpolator.nurbs.instance
 
-import org.fjn.matrix.Matrix
 import org.fjn.interpolator.nurbs._
 import solver.Solver1D
 import org.fjn.interpolator.basis._
+import breeze.linalg.DenseMatrix
 
 trait Nurbs1DBase
     extends ControlPoint
@@ -16,14 +16,17 @@ trait Nurbs1DBase
   val tolerance: Double
   lazy val dim = Seq(qk.length)
 
-  def apply(t: Double): Matrix[Double] = {
+  def apply(t: Double): DenseMatrix[Double] = {
 
-    var sum = new Matrix[Double](2, 1)
+    var sum = new DenseMatrix[Double](2, 1)
     (for (i <- getBasisRange(t)) yield {
 
-      val a: Matrix[Double] = (new Matrix[Double](2, 1) <= Seq(pk(i, 0), pk(i, 1))) * NBasis(i, basisOrder(0), 0)(t)
-      a
-    }).toSeq.foldLeft(new Matrix[Double](2, 1).zeros)((acc, b) => acc + b)
+      val a: DenseMatrix[Double] = new DenseMatrix[Double](2, 1)
+      a(0, 0) = pk(i, 0)
+      a(1, 0) = pk(i, 1)
+
+      a * NBasis(i, basisOrder(0), 0)(t)
+    }).toSeq.foldLeft(new DenseMatrix[Double](2, 1))((acc, b) => acc + b)
 
   }
 

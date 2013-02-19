@@ -1,9 +1,8 @@
 package org.fjn.interpolator.basis
 
 import org.fjn.interpolator.common.{ MultiArrayView, Point }
-import collection.immutable.IndexedSeq
 import collection.immutable
-import org.fjn.matrix.Matrix
+import breeze.linalg.DenseMatrix
 
 /**
  * Created by fjn army of one.
@@ -41,7 +40,7 @@ trait ParameterVector {
       val nDim = self.dim(nD)
       val a = (for (n <- 0 until nDim) yield {
         val sq: Seq[Int] = genSeq(n, nD, self.dim.length)
-        val a: Matrix[Double] = self.viewQk(sq)
+        val a: DenseMatrix[Double] = self.viewQk(sq)
         a
       }).toSeq
 
@@ -54,13 +53,13 @@ trait ParameterVector {
    * the linear 'matrix'  of transformed points, which consists
    * of the original points qk but placed into the transformed coordinates (u,v)
    */
-  lazy val tqk: immutable.Seq[Matrix[Double]] = {
+  lazy val tqk: immutable.Seq[DenseMatrix[Double]] = {
     (0 until qk.length).map(i => {
       val sq = viewQk.fromIndex2Seq(i)
-      val m: Matrix[Double] = viewQk(sq).clone()
+      val m: DenseMatrix[Double] = viewQk(sq)
 
       (0 until sq.length).foreach(n => {
-        m.set(n, 0, parameterKnots(n)(sq(n)))
+        m(n, 0) = parameterKnots(n)(sq(n))
       })
       m
     }).toSeq
