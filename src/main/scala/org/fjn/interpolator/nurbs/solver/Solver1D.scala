@@ -1,7 +1,8 @@
 package org.fjn.interpolator.nurbs.solver
 
-import org.fjn.matrix.Matrix
 import org.fjn.interpolator.basis.{ ParameterVector, BasisFunctionOrder, Basis, ControlPoint }
+//import breeze.linalg.DenseMatrix
+import breeze.linalg._
 
 /**
  * Created by fjn
@@ -15,20 +16,20 @@ trait Solver1D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>
   val init = self.tqk
   val numberOfSamples: Int = self.tqk.length
-  var pk: Matrix[Double] = new Matrix[Double](1, 1)
+  var pk: DenseMatrix[Double] = new DenseMatrix[Double](1, 1)
   val weights: Array[Double] = new Array[Double](self.qk.length)
 
   def solve(z: Array[Double]): Boolean = {
 
     val listOfMatrix =
       for (k <- 0 until dim.length) yield {
-        val qMatrix = new Matrix[Double](numberOfSamples, numberOfSamples)
+        val qMatrix = new DenseMatrix[Double](numberOfSamples, numberOfSamples)
         for (i <- 0 until numberOfSamples) {
           for (j <- 0 until numberOfSamples) {
             val jaux = j
             val auxU = tqk(i)(k, 0)
             val vv = NBasis(j, basisOrder(k), k)(auxU)
-            qMatrix.set(i, j, vv)
+            qMatrix(i, j) = vv
           }
 
         }
@@ -36,19 +37,19 @@ trait Solver1D {
 
       }
 
-    var rightM = new Matrix[Double](numberOfSamples, dim.length + 1)
+    var rightM = new DenseMatrix[Double](numberOfSamples, dim.length + 1)
     for (i <- 0 until numberOfSamples) {
       for (j <- 0 until dim.length)
-        rightM.set(i, j, qk(i)(j, 0))
+        rightM(i, j) = qk(i)(j, 0)
 
-      rightM.set(i, dim.length, z(i))
+      rightM(i, dim.length) = z(i)
     }
 
-    var mSol = new Matrix[Double](numberOfSamples, dim.length + 1)
+    var mSol = new DenseMatrix[Double](numberOfSamples, dim.length + 1)
     //computing the contol points:
     for (m <- listOfMatrix) {
-      m.invert
-      rightM = m * rightM
+
+      rightM = LinearAlgebra.inv(m) * rightM
     }
 
     pk = rightM
