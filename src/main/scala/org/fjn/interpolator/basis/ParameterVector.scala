@@ -40,7 +40,7 @@ trait ParameterVector {
       val nDim = self.dim(nD)
       val a = (for (n <- 0 until nDim) yield {
         val sq: Seq[Int] = genSeq(n, nD, self.dim.length)
-        val a: DenseMatrix[Double] = self.viewQk(sq).copy///it is better to give a copy to prevent modifications of the local parameter axis
+        val a: DenseMatrix[Double] = self.viewQk(sq).copy ///it is better to give a copy to prevent modifications of the local parameter axis
         a
       }).toSeq
 
@@ -56,7 +56,7 @@ trait ParameterVector {
   lazy val tqk: immutable.Seq[DenseMatrix[Double]] = {
     (0 until qk.length).map(i => {
       val sq = viewQk.fromIndex2Seq(i)
-      val m: DenseMatrix[Double] = viewQk(sq)
+      val m: DenseMatrix[Double] = viewQk(sq).copy
 
       (0 until sq.length).foreach(n => {
         m(n, 0) = parameterKnots(n)(sq(n))

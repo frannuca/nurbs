@@ -12,14 +12,14 @@ class Nurbs2DEqually(val qk: Seq[DenseMatrix[Double]], val basisOrder: Seq[Int],
   val minValX = qk.map(v => v(0, 0)).min
   val minValY = qk.map(v => v(1, 0)).min
 
-  override def getNormalizedCoord(x: Double, nCoord: Int): Double = {
-
-    var maxVal = if (nCoord == 0) maxValX else maxValY
-    var minVal = if (nCoord == 0) minValX else minValY
-
-    val a = (x - minVal) / (maxVal - minVal)
-    a
-
-  }
+  //  override def getNormalizedCoord(x: Double, nCoord: Int): Double = {
+  //
+  //    var maxVal = if (nCoord == 0) maxValX else maxValY
+  //    var minVal = if (nCoord == 0) minValX else minValY
+  //
+  //    val a = (x - minVal) / (maxVal - minVal)
+  //    a
+  //
+  //  }
 }
 

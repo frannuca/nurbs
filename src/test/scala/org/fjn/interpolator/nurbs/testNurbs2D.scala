@@ -135,7 +135,7 @@ object testNurbs2D {
 
     val order = 3
 
-    val bspline = new Nurbs2DEqually(qk, Array(order, order), Seq(nSamplesX, nSamplesY))
+    val bspline = new Nurbs2DChord(qk, Array(order, order), Seq(nSamplesX, nSamplesY))
 
     val qk2 = generateSamples(nSamplesX2, nSamplesY2)
     testFunc(bspline, z, qk2, nSamplesX2)

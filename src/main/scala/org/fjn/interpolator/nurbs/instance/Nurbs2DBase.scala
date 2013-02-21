@@ -36,7 +36,7 @@ trait Nurbs2DBase
   def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
     def nurb: (Double => Double) = x => {
-      if (nCoord == 0) this.apply(x, 0)(nCoord, 0) else this.apply(0, x)(nCoord, 0)
+      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
     }
 
     var dLow = 0.0
