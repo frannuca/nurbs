@@ -1,9 +1,8 @@
 package org.fjn.interpolator.nurbs.instance
 
-import org.fjn.interpolator.nurbs._
-import solver.Solver1D
 import org.fjn.interpolator.basis._
 import breeze.linalg.DenseMatrix
+import org.fjn.interpolator.nurbs.solver.Solver1D
 
 trait Nurbs1DBase
     extends ControlPoint

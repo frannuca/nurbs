@@ -6,6 +6,30 @@ import breeze.linalg.{ LinearAlgebra, DenseMatrix }
 //import org.fjn.matrix.Matrix
 import org.fjn.interpolator.basis.{ ParameterVector, BasisFunctionOrder, Basis, ControlPoint }
 
+/**
+ * Control points are in the original space.
+ * Parameter vector points are in the normalized space.
+ * The knots are the points defined by the basis curves.
+ * {{{
+ *   +------------------+
+ *   | Control points   |  +----x--------x---------x---------x---------x-----+
+ *   +------------------+
+ *          |                   +     +--+   +-----+         +         +
+ *          |                   |     |      |    +----------+         |
+ *          |                   |     |      |    |     +--------------+
+ *          v                   v     v      v    v     v
+ *   +------------------+
+ *   | Parameter vector |  +----x-----x-----x-----x-----x--------------------+
+ *   +------------------+
+ *          |
+ *          |
+ *          |
+ *          v
+ *   +------------------+
+ *   | Knots            |  +----x--x--x--x--x--x--x--x--x--------------------+
+ *   +------------------+
+ * }}}
+ */
 trait Solver2D {
   self: Basis with ParameterVector with ControlPoint with BasisFunctionOrder =>
 

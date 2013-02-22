@@ -1,17 +1,8 @@
 package org.fjn.interpolator.nurbs
 
-import collection.immutable
-
 import instance.{ Nurbs1DBase, Nurbs1DEqually, Nurbs1DChord, Nurbs1DCentripetal }
 import breeze.linalg.DenseMatrix
 
-/**
- * Created with IntelliJ IDEA.
- * User: fran
- * Date: 9/11/12
- * Time: 7:25 PM
- * To change this template use File | Settings | File Templates.
- */
 object testNurbs1D {
 
   def main(args: Array[String]) {
@@ -30,7 +21,7 @@ object testNurbs1D {
     })
 
     val order = 1
-    val xAxis: immutable.Seq[DenseMatrix[Double]] = qk.par.map(v => {
+    val xAxis: Seq[DenseMatrix[Double]] = qk.par.map(v => {
       val o = new DenseMatrix[Double](1, 1);
       o(0, 0) = v(0, 0)
       o

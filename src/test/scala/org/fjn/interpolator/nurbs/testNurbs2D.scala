@@ -1,14 +1,13 @@
 package org.fjn.interpolator.nurbs
 
-import instance.{ Nurbs2DBase, Nurbs2DEqually, Nurbs2DChord, Nurbs2DCentripetal }
+import instance.{ Nurbs2DBase, Nurbs2DChord, Nurbs2DCentripetal }
 import scala.Array
 import javax.swing.{ SwingUtilities, JFrame }
 import java.awt.BorderLayout
 import java.util.Random
-import scala.collection.JavaConversions._
 import org.fjn.interpolator.common.MultiArrayView
 
-import net.ericaro.surfaceplotter.{ JSurfacePanel }
+import net.ericaro.surfaceplotter.JSurfacePanel
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 import scala.math._
 import breeze.linalg.DenseMatrix

@@ -1,11 +1,10 @@
 package org.fjn.interpolator.basis
 
-import org.fjn.interpolator.common.{ Point, MultiArrayView }
-//import org.fjn.matrix.Matrix
+import org.fjn.interpolator.common.MultiArrayView
 import breeze.linalg.DenseMatrix
 
 /**
- * Trait hosting the list grid
+ * Control points define the grid where the NURBS must match the given function.
  */
 trait ControlPoint {
 

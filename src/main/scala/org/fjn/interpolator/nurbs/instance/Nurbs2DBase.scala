@@ -1,9 +1,8 @@
 package org.fjn.interpolator.nurbs.instance
 
-import org.fjn.interpolator.nurbs._
-import solver.Solver2D
 import org.fjn.interpolator.basis._
 import breeze.linalg.DenseMatrix
+import org.fjn.interpolator.nurbs.solver.Solver2D
 
 trait Nurbs2DBase
     extends ControlPoint
@@ -71,6 +70,14 @@ trait Nurbs2DBase
     dMean
   }
 
+  /**
+   * Finds all the basis functions that contribute to a point {{{t}}}.
+   * This is an optimization since not all basis functions influence every point.
+   *
+   * @param nCoord which coordinate
+   * @param t point
+   * @return
+   */
   def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
 
     //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1

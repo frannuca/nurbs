@@ -11,9 +11,9 @@ import breeze.linalg.DenseMatrix
  * Time: 7:19 PM
  */
 /**
- * This trait computes the location of the control points into the target nurbs space
+ * This trait computes the location of the control points into the target NURBS space
  * The control points are computed per coordinate given the list of input points qk
- * We can think of the control points as the mapping from real-space points into the normalized nurbs space points
+ * We can think of the control points as the mapping from real-space points into the normalized NURBS space points
  * This trait needs to be extended in order to compute the location in the normalized space. Typically three
  * methods are used: Centripetal, Chord and Equally distributed
  */
