@@ -37,17 +37,14 @@ object plotting {
     val z2 = Array.ofDim[Float](dimX, dimY)
 
     val vw = new MultiArrayView[DenseMatrix[Double]](qk, Seq(dimX, dimY))
-    for (i <- 0 until dimX) {
-      {
-        for (j <- 0 until dimY) {
+    for {
+      i <- 0 until dimX
+      j <- 0 until dimY
+    } {
 
-          val p = vw(Seq(i, j))
-          z1(i)(j) = f(p(0, 0), p(1, 0)).toFloat
-          z2(i)(j) = fRef(p(0, 0), p(1, 0)).toFloat
-
-        }
-
-      }
+      val p = vw(Seq(i, j))
+      z1(i)(j) = f(p(0, 0), p(1, 0)).toFloat
+      z2(i)(j) = fRef(p(0, 0), p(1, 0)).toFloat
     }
 
     val xx = qk.map(p => p(0, 0))
@@ -92,17 +89,18 @@ object plotting {
     bspline.solve(z)
 
     val sumError =
-      qk.par.map(item => {
-        val u = bspline.getNormalizedCoord(item(0, 0), 0)
-        val v = bspline.getNormalizedCoord(item(1, 0), 1)
-        val ax = bspline(u, v)
-        val x = ax(0, 0)
-        val y = ax(1, 0)
-        val z = ax(2, 0)
-        val r = psinc(item(0, 0), item(1, 0))
+      qk.par.map {
+        (item: DenseMatrix[Double]) =>
+          val u = bspline.getNormalizedCoord(item(0, 0), 0)
+          val v = bspline.getNormalizedCoord(item(1, 0), 1)
+          val ax = bspline(u, v)
+          val x = ax(0, 0)
+          val y = ax(1, 0)
+          val z = ax(2, 0)
+          val r = psinc(item(0, 0), item(1, 0))
 
-        abs(z - r)
-      })
+          abs(z - r)
+      }
 
     println("Total error =" + sumError.max)
 

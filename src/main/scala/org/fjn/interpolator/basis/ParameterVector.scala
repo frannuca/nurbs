@@ -1,8 +1,8 @@
 package org.fjn.interpolator.basis
 
 import org.fjn.interpolator.common.{ MultiArrayView, Point }
-import collection.immutable
 import breeze.linalg.DenseMatrix
+import scala.math._
 
 /**
  * Created by fjn army of one.
@@ -25,7 +25,7 @@ trait ParameterVector {
    * @param axis sequence of vector compounding the axis to be processed for instance computation
    * @return sequence of transformed vector in the normalized space
    */
-  protected def computParameters(axis: Seq[Double]): Seq[Double]
+  protected def computeParameters(axis: Seq[Double]): Seq[Double]
 
   private def genSeq(v: Int, nCoord: Int, nDim: Int): Seq[Int] = {
     for (n <- 0 until nDim) yield {
@@ -35,34 +35,36 @@ trait ParameterVector {
 
   lazy val parameterKnots: Seq[Seq[Double]] = {
 
-    viewQk
-    (for (nD <- 0 until self.dim.length) yield {
-      val nDim = self.dim(nD)
-      val a = (for (n <- 0 until nDim) yield {
-        val sq: Seq[Int] = genSeq(n, nD, self.dim.length)
-        val a: DenseMatrix[Double] = self.viewQk(sq).copy ///it is better to give a copy to prevent modifications of the local parameter axis
+    for { nD <- 0 until dim.length } yield {
+      val nDim = dim(nD)
+      val a = for (n <- 0 until nDim) yield {
+        val sq: Seq[Int] = genSeq(n, nD, dim.length)
+        val a: DenseMatrix[Double] = viewQk(sq).copy ///it is better to give a copy to prevent modifications of the local parameter axis
         a
-      }).toSeq
+      }
 
-      computParameters(a.map(v => v(nD, 0)))
-    }).toSeq
+      computeParameters(a.map(v => v(nD, 0)))
+    }
 
   }
 
   /**
-   * the linear 'matrix'  of transformed points, which consists
+   * the linear 'matrix' of transformed points, which consists
    * of the original points qk but placed into the transformed coordinates (u,v)
    */
-  lazy val tqk: immutable.Seq[DenseMatrix[Double]] = {
-    (0 until qk.length).map(i => {
+  lazy val tqk: Seq[DenseMatrix[Double]] = {
+    for {
+      i <- qk.indices
+    } yield {
       val sq = viewQk.fromIndex2Seq(i)
       val m: DenseMatrix[Double] = viewQk(sq).copy
-
-      (0 until sq.length).foreach(n => {
+      for {
+        n <- sq.indices
+      } {
         m(n, 0) = parameterKnots(n)(sq(n))
-      })
+      }
       m
-    }).toSeq
+    }
   }
 
   lazy val viewTQk = new MultiArrayView(tqk, dim)
@@ -72,19 +74,21 @@ trait ParameterVector {
 trait ParameterVectorChord extends ParameterVector {
   self: ControlPoint =>
 
-  protected def computParameters(axis: Seq[Double]): Seq[Double] = {
-    val normLength =
-      (for (n <- 1 until axis.length) yield { math.abs(axis(n) - axis(n - 1)) }).toSeq.foldLeft(0.0)((acc, v) => acc + v)
+  // TODO: Fran please document
+  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
+    val lengths = for {
+      Seq(a, b) <- axis.sliding(2).toSeq
+    } yield {
+      abs(b - a)
+    }
 
-    var lastVal = 0.0
-    val result =
-      Seq(0.0) ++
-        (for (n <- 1 until axis.length - 1) yield {
-          lastVal = lastVal + math.abs(math.abs(axis(n) - axis(n - 1))) / normLength
-          lastVal
-        }).toSeq ++ Seq(1.0)
+    val normLength = lengths.sum
 
-    result
+    val normalizedLengths = lengths.map(_ / normLength)
+    val result = normalizedLengths.scanLeft(0d)(_ + _)
+
+    val resultWithEndPointsForced = Seq(0.0) ++ result.slice(1, result.length - 1) ++ Seq(1.0)
+    resultWithEndPointsForced
   }
 
 }
@@ -92,7 +96,7 @@ trait ParameterVectorChord extends ParameterVector {
 trait ParameterVectorCentripetal extends ParameterVector {
   self: ControlPoint =>
 
-  protected def computParameters(axis: Seq[Double]): Seq[Double] = {
+  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
     val sqrt_normLength =
       (for (n <- 1 until axis.length) yield { math.sqrt(axis(n) - axis(n - 1)) }).toSeq.foldLeft(0.0)((acc, v) => acc + v)
 
@@ -111,7 +115,7 @@ trait ParameterVectorCentripetal extends ParameterVector {
 trait ParameterVectorEqually extends ParameterVector {
   self: ControlPoint =>
 
-  protected def computParameters(axis: Seq[Double]): Seq[Double] = {
+  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
     val N = axis.length
     val result: Seq[Double] =
 
