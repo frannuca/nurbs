@@ -3,6 +3,7 @@ package org.fjn.interpolator.nurbs.instance
 import org.fjn.interpolator.basis._
 import breeze.linalg.DenseMatrix
 import org.fjn.interpolator.nurbs.solver.Solver2D
+import scala.math._
 
 trait Nurbs2DBase
     extends ControlPoint
@@ -123,18 +124,20 @@ trait Nurbs2DBase
   def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
 
     val vector = knotsVector(nCoord)
-    // TODO: Fran please document
-    val sz = vector.length - basisOrderForCoord(nCoord) - 1
+
+    // number of points that a basis function takes to the left / right
+    val numberOfPoints = basisOrderForCoord(nCoord) + 1
 
     val i = vector.indexWhere(t <= _)
 
-    val resVector = if (i != -1 && i < sz) {
-      i - basisOrderForCoord(nCoord) - 1 to i + basisOrderForCoord(nCoord) + 1
+    val resVector = if (i != -1) {
+      val leftIndex = max(0, i - numberOfPoints)
+      val rightIndex = min(i + numberOfPoints, vector.length - numberOfPoints)
+      leftIndex until rightIndex
     } else {
-      0 until vector.length
+      vector.indices
     }
 
-    resVector.filter(c => c >= 0 && c < sz)
-
+    resVector
   }
 }
