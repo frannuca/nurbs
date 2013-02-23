@@ -38,6 +38,7 @@ trait Nurbs2DBase
   lazy val yReal = Real2TransformedAxis.map(x => x(1, 0))
 
   def getNormalizedCoord(x: Double, nCoord: Int): Double = {
+    require(nCoord < 2, "Fast lookup only implemented up to 2 dimensions!")
 
     val axis =
       if (nCoord == 0) {
