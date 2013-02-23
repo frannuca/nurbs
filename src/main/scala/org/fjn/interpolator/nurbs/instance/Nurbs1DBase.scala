@@ -24,7 +24,7 @@ trait Nurbs1DBase
       a(0, 0) = pk(i, 0)
       a(1, 0) = pk(i, 1)
 
-      a * NBasis(i, basisOrder(0), 0)(t)
+      a * NBasis(i, basisOrderForCoord(0), 0)(t)
     }).toSeq.foldLeft(new DenseMatrix[Double](2, 1))((acc, b) => acc + b)
 
   }
@@ -71,7 +71,7 @@ trait Nurbs1DBase
 
   def getBasisRange(t: Double): Seq[Int] = {
     val vector = knotsVector(0)
-    val sz = vector.length - basisOrder(0) - 1
+    val sz = vector.length - basisOrderForCoord(0) - 1
 
     var i = 0
     var found: Boolean = false
@@ -86,7 +86,7 @@ trait Nurbs1DBase
 
     val resVector =
       if (found) {
-        i - basisOrder(0) - 1 until i + basisOrder(0) + 1
+        i - basisOrderForCoord(0) - 1 until i + basisOrderForCoord(0) + 1
       } else
         0 until vector.length
 

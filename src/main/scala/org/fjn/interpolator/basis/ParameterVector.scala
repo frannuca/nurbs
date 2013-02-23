@@ -25,20 +25,20 @@ trait ParameterVector {
    * @param axis sequence of vector compounding the axis to be processed for instance computation
    * @return sequence of transformed vector in the normalized space
    */
-  protected def computeParameters(axis: Seq[Double]): Seq[Double]
+  protected def computeParameters(axis: IndexedSeq[Double]): IndexedSeq[Double]
 
-  private def genSeq(v: Int, nCoord: Int, nDim: Int): Seq[Int] = {
+  private def genSeq(v: Int, nCoord: Int, nDim: Int): IndexedSeq[Int] = {
     for (n <- 0 until nDim) yield {
       if (n == nCoord) v else 0
     }
   }
 
-  lazy val parameterKnots: Seq[Seq[Double]] = {
+  lazy val parameterKnots: IndexedSeq[IndexedSeq[Double]] = {
 
     for { nD <- 0 until dim.length } yield {
       val nDim = dim(nD)
       val a = for (n <- 0 until nDim) yield {
-        val sq: Seq[Int] = genSeq(n, nD, dim.length)
+        val sq: IndexedSeq[Int] = genSeq(n, nD, dim.length)
         val a: DenseMatrix[Double] = viewQk(sq).copy ///it is better to give a copy to prevent modifications of the local parameter axis
         a
       }
@@ -75,9 +75,9 @@ trait ParameterVectorChord extends ParameterVector {
   self: ControlPoint =>
 
   // TODO: Fran please document
-  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
+  protected def computeParameters(axis: IndexedSeq[Double]): IndexedSeq[Double] = {
     val lengths = for {
-      Seq(a, b) <- axis.sliding(2).toSeq
+      IndexedSeq(a, b) <- axis.sliding(2).toIndexedSeq
     } yield {
       abs(b - a)
     }
@@ -87,7 +87,7 @@ trait ParameterVectorChord extends ParameterVector {
     val normalizedLengths = lengths.map(_ / normLength)
     val result = normalizedLengths.scanLeft(0d)(_ + _)
 
-    val resultWithEndPointsForced = Seq(0.0) ++ result.slice(1, result.length - 1) ++ Seq(1.0)
+    val resultWithEndPointsForced = IndexedSeq(0.0) ++ result.slice(1, result.length - 1) ++ IndexedSeq(1.0)
     resultWithEndPointsForced
   }
 
@@ -96,17 +96,17 @@ trait ParameterVectorChord extends ParameterVector {
 trait ParameterVectorCentripetal extends ParameterVector {
   self: ControlPoint =>
 
-  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
+  protected def computeParameters(axis: IndexedSeq[Double]): IndexedSeq[Double] = {
     val sqrt_normLength =
-      (for (n <- 1 until axis.length) yield { math.sqrt(axis(n) - axis(n - 1)) }).toSeq.foldLeft(0.0)((acc, v) => acc + v)
+      (for (n <- 1 until axis.length) yield { math.sqrt(axis(n) - axis(n - 1)) }).sum
 
     var lastVal = 0.0
     val result =
-      Seq(0.0) ++
+      IndexedSeq(0.0) ++
         (for (n <- 1 until axis.length - 1) yield {
           lastVal = lastVal + math.sqrt(math.abs(axis(n) - axis(n - 1))) / sqrt_normLength
           lastVal
-        }).toSeq ++ Seq(1.0)
+        }).toSeq ++ IndexedSeq(1.0)
 
     result
   }
@@ -115,13 +115,11 @@ trait ParameterVectorCentripetal extends ParameterVector {
 trait ParameterVectorEqually extends ParameterVector {
   self: ControlPoint =>
 
-  protected def computeParameters(axis: Seq[Double]): Seq[Double] = {
+  protected def computeParameters(axis: IndexedSeq[Double]): IndexedSeq[Double] = {
     val N = axis.length
-    val result: Seq[Double] =
-
-      (for (n <- 0 until axis.length) yield {
-        n.toDouble / (N.toDouble - 1)
-      }).toSeq
+    val result = (for (n <- 0 until axis.length) yield {
+      n.toDouble / (N.toDouble - 1)
+    }).toIndexedSeq
 
     result
   }

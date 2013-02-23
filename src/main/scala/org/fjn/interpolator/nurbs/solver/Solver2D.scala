@@ -47,7 +47,7 @@ trait Solver2D {
       val uk = parameterKnots(0)(i)
       for (j <- 0 until dim(0)) {
 
-        val vv = NBasis(j, basisOrder(0), 0)(uk)
+        val vv = NBasis(j, basisOrderForCoord(0), 0)(uk)
         qXMatrix(i, j) = vv
       }
     }
@@ -102,7 +102,7 @@ trait Solver2D {
     for (i <- 0 until dim(1)) {
       val vk = parameterKnots(1)(i)
       for (j <- 0 until dim(1)) {
-        val vv = NBasis(j, basisOrder(1), 1)(vk)
+        val vv = NBasis(j, basisOrderForCoord(1), 1)(vk)
         qXMatrix(i, j) = vv
       }
     }

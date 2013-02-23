@@ -3,6 +3,7 @@ package org.fjn.interpolator.nurbs.instance
 import org.fjn.interpolator.basis._
 import breeze.linalg.DenseMatrix
 import org.fjn.interpolator.nurbs.solver.Solver2D
+import collection.immutable.IndexedSeq
 
 trait Nurbs2DBase
     extends ControlPoint
@@ -23,7 +24,7 @@ trait Nurbs2DBase
         pAux(0, 0) = pk(i)(j, 0)
         pAux(1, 0) = pk(i)(j, 1)
         pAux(2, 0) = pk(i)(j, 2)
-        val basis = (NBasis(i, basisOrder(0), 0)(u) * NBasis(j, basisOrder(1), 1)(v))
+        val basis = (NBasis(i, basisOrderForCoord(0), 0)(u) * NBasis(j, basisOrderForCoord(1), 1)(v))
         sum = sum + pAux * basis
       }
 
@@ -32,17 +33,25 @@ trait Nurbs2DBase
     sum
   }
 
-  lazy val Real2TransformedAxis = (0 to 1000).map(x => this.apply(x / 1000.0, x / 1000.0))
-  lazy val xReal = Real2TransformedAxis.map(x => x(0, 0))
-  lazy val yReal = Real2TransformedAxis.map(x => x(1, 0))
+  lazy val numberOfPointsX = ((qk.last(0, 0) - qk.head(0, 0)) / tolerance).toInt
+  lazy val numberOfPointsY = ((qk.last(1, 0) - qk.head(1, 0)) / tolerance).toInt
+
+  private def Real2TransformedAxis(nPoints: Int, nCoord: Int): IndexedSeq[Double] = {
+    (0 to nPoints).map(x => {
+      if (nCoord == 0) this.apply(x.toDouble / nPoints.toDouble, 0.0)(0, 0)
+      else this.apply(0, x.toDouble / nPoints.toDouble)(1, 0)
+    })
+  }
+  lazy val xReal: IndexedSeq[Double] = Real2TransformedAxis(numberOfPointsX, 0)
+  lazy val yReal: IndexedSeq[Double] = Real2TransformedAxis(numberOfPointsY, 1)
 
   def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
-    val axis =
+    val (axis, nPoints) =
       if (nCoord == 0) {
-        xReal
+        (xReal, numberOfPointsX)
       } else {
-        yReal
+        (yReal, numberOfPointsY)
       }
 
     if (x >= axis.last) return 1.0
@@ -74,7 +83,7 @@ trait Nurbs2DBase
       }
 
     }
-    dMean / 1000.0
+    dMean.toDouble / nPoints.toDouble
 
     //    def nurb: (Double => Double) = x => {
     //      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
@@ -125,7 +134,7 @@ trait Nurbs2DBase
     //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1
 
     val vector = knotsVector(nCoord)
-    val sz = vector.length - basisOrder(nCoord) - 1
+    val sz = vector.length - basisOrderForCoord(nCoord) - 1
 
     var i = 0
     var found: Boolean = false
@@ -140,7 +149,7 @@ trait Nurbs2DBase
 
     val resVector =
       if (found) {
-        i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
+        i - basisOrderForCoord(nCoord) - 1 to i + basisOrderForCoord(nCoord) + 1
       } else
         0 until vector.length
 

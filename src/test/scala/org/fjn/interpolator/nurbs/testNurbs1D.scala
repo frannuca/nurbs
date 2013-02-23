@@ -21,12 +21,12 @@ object testNurbs1D {
     })
 
     val order = 1
-    val xAxis: Seq[DenseMatrix[Double]] = qk.par.map(v => {
-      val o = new DenseMatrix[Double](1, 1);
+    val xAxis: IndexedSeq[DenseMatrix[Double]] = qk.par.map(v => {
+      val o = new DenseMatrix[Double](1, 1)
       o(0, 0) = v(0, 0)
       o
     }
-    ).seq.toSeq
+    ).seq.toIndexedSeq
     //Equally:
 
     def testFunc(bspline: Nurbs1DBase) {
@@ -47,14 +47,14 @@ object testNurbs1D {
 
     }
 
-    val bspline = new Nurbs1DEqually(xAxis, Seq(order), 1.0, 0.0)
+    val bspline = new Nurbs1DEqually(xAxis, IndexedSeq(order), 1.0, 0.0)
     testFunc(bspline)
 
     //Chord:
-    val bspline2 = new Nurbs1DChord(xAxis, Seq(order), 1e-2)
+    val bspline2 = new Nurbs1DChord(xAxis, IndexedSeq(order), 1e-2)
     testFunc(bspline2)
 
-    val bspline3 = new Nurbs1DCentripetal(xAxis, Seq(order), 1e-2)
+    val bspline3 = new Nurbs1DCentripetal(xAxis, IndexedSeq(order), 1e-2)
     testFunc(bspline3)
 
   }
