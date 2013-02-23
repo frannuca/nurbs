@@ -14,11 +14,11 @@ import breeze.linalg.DenseMatrix
 
 object plotting {
 
-  val nSamplesX = 25
-  val nSamplesY = 25
+  val nSamplesX = 125
+  val nSamplesY = 125
 
-  val nSamplesX2 = 75
-  val nSamplesY2 = 75
+  val nSamplesX2 = 255
+  val nSamplesY2 = 255
 
   def testSomething(f: (Double, Double) => Double, fRef: (Double, Double) => Double, dimX: Int, qk: Seq[DenseMatrix[Double]]) {
 
