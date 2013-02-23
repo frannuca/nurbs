@@ -64,13 +64,13 @@ object plotting {
     sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4)
   }
 
-  def generateSamples(nSamplesX: Int, nSamplesY: Int): (Seq[DenseMatrix[Double]]) = {
+  def generateSamples(nSamplesX: Int, nSamplesY: Int): (IndexedSeq[DenseMatrix[Double]]) = {
 
     val middle = 8
-    val a = (for (
-      k <- 0 until nSamplesY;
+    val a = for {
+      k <- 0 until nSamplesY
       h <- 0 until nSamplesX
-    ) yield {
+    } yield {
       val mt = new DenseMatrix[Double](2, 1)
 
       val v1 = -0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)
@@ -79,8 +79,6 @@ object plotting {
       mt(1, 0) = v2
       mt
     }
-    ).toSeq
-
     a
 
   }
@@ -182,7 +180,7 @@ object testNurbs2DCentripetal {
 
     val order = 3
 
-    val bspline = new Nurbs2DCentripetal(qk, Array(order, order), Seq(nSamplesX, nSamplesY), 1e-2)
+    val bspline = new Nurbs2DCentripetal(qk, Array(order, order), IndexedSeq(nSamplesX, nSamplesY), 1e-2)
 
     val qk2 = generateSamples(nSamplesX2, nSamplesY2)
     testFunc(bspline, z, qk2, nSamplesX2)

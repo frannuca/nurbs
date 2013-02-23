@@ -4,7 +4,7 @@ package org.fjn.interpolator.basis
  * contains the vector of spline order list per coordinate
  */
 trait BasisFunctionOrder {
-  val basisOrder: Seq[Int]
+  val basisOrderForCoord: Seq[Int]
 }
 
 /*

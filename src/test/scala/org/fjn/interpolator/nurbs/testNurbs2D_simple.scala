@@ -32,7 +32,7 @@ object testNurbs2D_simple {
     val qk = R.map(r => r._1)
     val z = R.map(r => r._2)
 
-    val spline = new Nurbs2DEqually(qk, Seq(1, 1), Seq(Ns, Ns))
+    val spline = new Nurbs2DEqually(qk, IndexedSeq(1, 1), IndexedSeq(Ns, Ns))
 
     spline.solve(z.toArray)
 

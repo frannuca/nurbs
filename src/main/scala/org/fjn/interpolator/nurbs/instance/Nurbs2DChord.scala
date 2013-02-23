@@ -10,7 +10,7 @@ import breeze.linalg.DenseMatrix
  * Time: 23:28
  * To change this template use File | Settings | File Templates.
  */
-class Nurbs2DChord(val qk: Seq[DenseMatrix[Double]], val basisOrder: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-2)
+class Nurbs2DChord(val qk: Seq[DenseMatrix[Double]], val basisOrderForCoord: Seq[Int], val dim: Seq[Int], implicit val tolerance: Double = 1.0e-2)
     extends ParameterVectorChord with Nurbs2DBase {
 
   println("Nurbs2DChord")

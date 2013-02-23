@@ -28,7 +28,7 @@ trait Solver1D {
           for (j <- 0 until numberOfSamples) {
             val jaux = j
             val auxU = tqk(i)(k, 0)
-            val vv = NBasis(j, basisOrder(k), k)(auxU)
+            val vv = NBasis(j, basisOrderForCoord(k), k)(auxU)
             qMatrix(i, j) = vv
           }
 

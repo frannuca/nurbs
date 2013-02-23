@@ -16,15 +16,15 @@ trait Nurbs2DBase
 
   def apply(u: Double, v: Double): DenseMatrix[Double] = {
 
-    var sum = new DenseMatrix[Double](3, 1)
+    val sum = new DenseMatrix[Double](3, 1)
     for (i <- getBasisRange(0)(u)) {
       for (j <- getBasisRange(1)(v)) {
         val pAux = new DenseMatrix[Double](3, 1)
         pAux(0, 0) = pk(i)(j, 0)
         pAux(1, 0) = pk(i)(j, 1)
         pAux(2, 0) = pk(i)(j, 2)
-        val basis = (NBasis(i, basisOrder(0), 0)(u) * NBasis(j, basisOrder(1), 1)(v))
-        sum = sum + pAux * basis
+        val basis = (NBasis(i, basisOrderForCoord(0), 0)(u) * NBasis(j, basisOrderForCoord(1), 1)(v))
+        sum += pAux * basis
       }
 
     }
@@ -122,27 +122,17 @@ trait Nurbs2DBase
    */
   def getBasisRange(nCoord: Int)(t: Double): Seq[Int] = {
 
-    //return 0 until  knotsVector(nCoord).length - basisOrder(nCoord)    -1
-
     val vector = knotsVector(nCoord)
-    val sz = vector.length - basisOrder(nCoord) - 1
+    // TODO: Fran please document
+    val sz = vector.length - basisOrderForCoord(nCoord) - 1
 
-    var i = 0
-    var found: Boolean = false
-    var counter = 0
-    while (!found && counter < sz) {
-      if (t <= vector(counter)) {
-        i = counter
-        found = true
-      }
-      counter = counter + 1
+    val i = vector.indexWhere(t <= _)
+
+    val resVector = if (i != -1 && i < sz) {
+      i - basisOrderForCoord(nCoord) - 1 to i + basisOrderForCoord(nCoord) + 1
+    } else {
+      0 until vector.length
     }
-
-    val resVector =
-      if (found) {
-        i - basisOrder(nCoord) - 1 to i + basisOrder(nCoord) + 1
-      } else
-        0 until vector.length
 
     resVector.filter(c => c >= 0 && c < sz)
 
