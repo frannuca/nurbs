@@ -32,20 +32,30 @@ trait Nurbs2DBase
     sum
   }
 
+  lazy val Real2TransformedAxis = (0 to 1000).map(x => this.apply(x / 1000.0, x / 1000.0))
+  lazy val xReal = Real2TransformedAxis.map(x => x(0, 0))
+  lazy val yReal = Real2TransformedAxis.map(x => x(1, 0))
+
   def getNormalizedCoord(x: Double, nCoord: Int): Double = {
 
-    def nurb: (Double => Double) = x => {
-      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
-    }
+    val axis =
+      if (nCoord == 0) {
+        xReal
+      } else {
+        yReal
+      }
 
-    var dLow = 0.0
-    var dHigh = 1.0
-    var dMean = 0.5
+    if (x >= axis.last) return 1.0
+    else if (x <= axis.head) return 0.0
 
-    var mean = nurb(dMean)
-    var counter = 0
-    var found: Boolean = false
+    var dLow = 0
+    var dHigh = axis.length
+    var dMean = (axis.length * 0.5).toInt
+
+    var mean = axis(dMean)
+    var found = false
     while (!found) {
+
       if (math.abs(x - mean) < tolerance) {
         found = true
       } else {
@@ -56,18 +66,50 @@ trait Nurbs2DBase
         } else
           found = true
 
-        dMean = (dHigh + dLow) * 0.5
-        mean = nurb(dMean)
+        dMean = ((dHigh + dLow) * 0.5).toInt
+        mean = axis(dMean)
 
-        if (dHigh <= dLow)
+        if (dHigh <= dLow || dHigh - dLow == 1)
           found = true
       }
-      counter = counter + 1
-      if (counter > 500)
-        found = true
-    }
 
-    dMean
+    }
+    dMean / 1000.0
+
+    //    def nurb: (Double => Double) = x => {
+    //      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
+    //    }
+    //
+    //    var dLow = 0.0
+    //    var dHigh = 1.0
+    //    var dMean = 0.5
+    //
+    //    var mean = nurb(dMean)
+    //    var counter = 0
+    //    var found: Boolean = false
+    //    while (!found) {
+    //      if (math.abs(x - mean) < tolerance) {
+    //        found = true
+    //      } else {
+    //        if (x < mean) {
+    //          dHigh = dMean
+    //        } else if (x > mean) {
+    //          dLow = dMean
+    //        } else
+    //          found = true
+    //
+    //        dMean = (dHigh + dLow) * 0.5
+    //        mean = nurb(dMean)
+    //
+    //        if (dHigh <= dLow)
+    //          found = true
+    //      }
+    //      counter = counter + 1
+    //      if (counter > 500)
+    //        found = true
+    //    }
+    //
+    //    dMean
   }
 
   /**
