@@ -6,6 +6,7 @@ import javax.swing.{ SwingUtilities, JFrame }
 import java.awt.BorderLayout
 import java.util.Random
 import org.fjn.interpolator.common.MultiArrayView
+import org.fjn.interpolator.util.Timer
 
 import net.ericaro.surfaceplotter.JSurfacePanel
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
@@ -82,15 +83,18 @@ object plotting {
     a
 
   }
+
   def testFunc(bspline: Nurbs2DBase, z: Array[Double], qk: Seq[DenseMatrix[Double]], dim: Int) {
 
     bspline.solve(z)
 
-    val sumError =
+    val (time, sumError) = Timer.timed {
       qk.par.map {
         (item: DenseMatrix[Double]) =>
-          val u = bspline.getNormalizedCoord(item(0, 0), 0)
-          val v = bspline.getNormalizedCoord(item(1, 0), 1)
+          val u1 = item(0, 0)
+          val v1 = item(1, 0)
+          val u = bspline.getNormalizedCoordSlow(u1, 0)
+          val v = bspline.getNormalizedCoordSlow(v1, 1)
           val ax = bspline(u, v)
           val x = ax(0, 0)
           val y = ax(1, 0)
@@ -99,8 +103,9 @@ object plotting {
 
           abs(z - r)
       }
+    }
 
-    println("Total error =" + sumError.max)
+    println("Total error = %f in %f s".format(sumError.max, time / 1000d))
 
     SwingUtilities.invokeLater(new Runnable {
       def run {

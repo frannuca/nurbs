@@ -42,6 +42,7 @@ trait Nurbs2DBase
       else this.apply(0, x.toDouble / nPoints.toDouble)(1, 0)
     })
   }
+
   lazy val xReal: IndexedSeq[Double] = Real2TransformedAxis(numberOfPointsX, 0)
   lazy val yReal: IndexedSeq[Double] = Real2TransformedAxis(numberOfPointsY, 1)
 
@@ -58,14 +59,31 @@ trait Nurbs2DBase
     if (x >= axis.last) return 1.0
     else if (x <= axis.head) return 0.0
 
-    var dLow = 0
-    var dHigh = axis.length
-    var dMean = (axis.length * 0.5).toInt
+    var low = 0
+    var high = axis.length - 1
+    while (high - low > 1) {
+      val mid = (low + high) >>> 1 // same as (low + high) / 2 but safer
+      if (x < axis(mid))
+        high = mid
+      else
+        low = mid
+    }
+    low.toDouble / nPoints.toDouble
+  }
 
-    var mean = axis(dMean)
-    var found = false
+  def getNormalizedCoordSlow(x: Double, nCoord: Int): Double = {
+    def nurb: (Double => Double) = x => {
+      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
+    }
+
+    var dLow = 0.0
+    var dHigh = 1.0
+    var dMean = 0.5
+
+    var mean = nurb(dMean)
+    var counter = 0
+    var found: Boolean = false
     while (!found) {
-
       if (math.abs(x - mean) < tolerance) {
         found = true
       } else {
@@ -76,50 +94,18 @@ trait Nurbs2DBase
         } else
           found = true
 
-        dMean = ((dHigh + dLow) * 0.5).toInt
-        mean = axis(dMean)
+        dMean = (dHigh + dLow) * 0.5
+        mean = nurb(dMean)
 
-        if (dHigh <= dLow || dHigh - dLow == 1)
+        if (dHigh <= dLow)
           found = true
       }
-
+      counter = counter + 1
+      if (counter > 500)
+        found = true
     }
-    dMean.toDouble / nPoints.toDouble
 
-    //    def nurb: (Double => Double) = x => {
-    //      (if (nCoord == 0) this.apply(x, 0) else this.apply(0, x))(nCoord, 0)
-    //    }
-    //
-    //    var dLow = 0.0
-    //    var dHigh = 1.0
-    //    var dMean = 0.5
-    //
-    //    var mean = nurb(dMean)
-    //    var counter = 0
-    //    var found: Boolean = false
-    //    while (!found) {
-    //      if (math.abs(x - mean) < tolerance) {
-    //        found = true
-    //      } else {
-    //        if (x < mean) {
-    //          dHigh = dMean
-    //        } else if (x > mean) {
-    //          dLow = dMean
-    //        } else
-    //          found = true
-    //
-    //        dMean = (dHigh + dLow) * 0.5
-    //        mean = nurb(dMean)
-    //
-    //        if (dHigh <= dLow)
-    //          found = true
-    //      }
-    //      counter = counter + 1
-    //      if (counter > 500)
-    //        found = true
-    //    }
-    //
-    //    dMean
+    dMean
   }
 
   /**
