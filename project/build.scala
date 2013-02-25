@@ -64,7 +64,7 @@ object PythiaBuild extends Build {
     file("."),
     settings = buildSettings ++ Seq(
       resolvers := Seq(Resolver.sonatypeRepo("snapshots")),
-      libraryDependencies ++= Seq(SurfacePlotter, BreezeMath, BreezeLearn, BreezeProcess, BreezeViz,Blas))
+      libraryDependencies ++= Seq(/*SurfacePlotter, */BreezeMath, BreezeLearn, BreezeProcess, BreezeViz,Blas))
 
   ) //aggregate (optimizer,ia, fjn.fjn.fjn.pythia.pricers)
 
