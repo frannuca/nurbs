@@ -2,6 +2,7 @@ package org.fjn.interpolator.nurbs.solver
 
 import org.fjn.interpolator.common.MultiArrayView
 import breeze.linalg.{ LinearAlgebra, DenseMatrix }
+import collection.immutable.IndexedSeq
 
 //import org.fjn.matrix.Matrix
 import org.fjn.interpolator.basis.{ ParameterVector, BasisFunctionOrder, Basis, ControlPoint }
@@ -40,7 +41,7 @@ trait Solver2D {
   var pk: Seq[DenseMatrix[Double]] = Seq()
 
   def SolveOnU(z: Seq[Double], viewer_norm: MultiArrayView[DenseMatrix[Double]],
-    viewer_original: MultiArrayView[DenseMatrix[Double]], viewerZ: MultiArrayView[Double]): Seq[DenseMatrix[Double]] = {
+    viewer_original: MultiArrayView[DenseMatrix[Double]], viewerZ: MultiArrayView[Double]): IndexedSeq[DenseMatrix[Double]] = {
     //Preparing the matrix for constant y-slices:
     var qXMatrix = new DenseMatrix[Double](dim(0), dim(0))
     for (i <- 0 until dim(0)) {
@@ -89,16 +90,16 @@ trait Solver2D {
       }
 
     val result = futuresOnSystemSolver.par.map(f => f())
-    result.seq
+    result.seq.toIndexedSeq
   }
 
-  def solve(z: Seq[Double]): Boolean = {
+  def solve(z: Seq[Double]) = {
 
     val viewerZ = new MultiArrayView[Double](z, dim)
 
-    val Rl = SolveOnU(z, viewTQk, viewQk, viewerZ)
+    val Rl: IndexedSeq[DenseMatrix[Double]] = SolveOnU(z, viewTQk, viewQk, viewerZ)
 
-    var qXMatrix = new DenseMatrix[Double](dim(1), dim(1))
+    val qXMatrix = new DenseMatrix[Double](dim(1), dim(1))
     for (i <- 0 until dim(1)) {
       val vk = parameterKnots(1)(i)
       for (j <- 0 until dim(1)) {
@@ -107,7 +108,9 @@ trait Solver2D {
       }
     }
 
-    qXMatrix = LinearAlgebra.inv(qXMatrix)
+    val qXMatrixInv = LinearAlgebra.inv(qXMatrix)
+
+
 
     val futuresOnSystemSolver: Seq[() => DenseMatrix[Double]] =
       for (k <- 0 until dim(0)) //we have dim(1) dim(1) points in y-direction, which are slices now
@@ -119,17 +122,18 @@ trait Solver2D {
             val rightM = new DenseMatrix[Double](dim(1), pointDimension)
             for (i <- 0 until dim(1)) {
               for (j <- 0 until pointDimension)
-                rightM(i, j) = Rl(i)(k, j)
+                {
+                  val rl: DenseMatrix[Double] = Rl(i)
+                  rightM(i, j) = rl(k, j)
+                }
             }
 
-            qXMatrix * rightM
+            qXMatrixInv * rightM
           }
 
       }
 
     pk = futuresOnSystemSolver.par.map(f => f()).seq
-
-    true
   }
 
 }
