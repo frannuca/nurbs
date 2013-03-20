@@ -15,11 +15,11 @@ import breeze.linalg.DenseMatrix
 
 object plotting {
 
-  val nSamplesX = 125
-  val nSamplesY = 125
+  val nSamplesX = 10
+  val nSamplesY = 10
 
-  val nSamplesX2 = 255
-  val nSamplesY2 = 255
+  val nSamplesX2 = 125
+  val nSamplesY2 = 125
 
   def testSomething(f: (Double, Double) => Double, fRef: (Double, Double) => Double, dimX: Int, qk: Seq[DenseMatrix[Double]]) {
 
@@ -62,7 +62,7 @@ object plotting {
   }
 
   def psinc(u: Double, v: Double): Double = {
-    sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4)
+    sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4) * 100.0
   }
 
   def generateSamples(nSamplesX: Int, nSamplesY: Int): (IndexedSeq[DenseMatrix[Double]]) = {
@@ -75,7 +75,7 @@ object plotting {
       val mt = new DenseMatrix[Double](2, 1)
 
       val v1 = -0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)
-      val v2 = -0.5 * middle * Pi + middle * Pi * k.toDouble / (nSamplesY - 1)
+      val v2 = -0.5 * middle * Pi + middle * Pi * 2.25 * k.toDouble / (nSamplesY - 1)
       mt(0, 0) = v1
       mt(1, 0) = v2
       mt
@@ -135,7 +135,7 @@ object testNurbs2DEqually {
 
     val order = 3
 
-    val bspline = new Nurbs2DEqually(qk, Array(order, order), Array(nSamplesX, nSamplesY))
+    val bspline = new Nurbs2DEqually(qk, Array(1, order), Array(nSamplesX, nSamplesY))
 
     val qk2 = generateSamples(nSamplesX2, nSamplesY2)
     testFunc(bspline, z, qk2, nSamplesX2)
@@ -158,7 +158,7 @@ object testNurbs2DChord {
       psinc(x, y)
     }).toArray
 
-    val order = 3
+    val order = 2
 
     val bspline = new Nurbs2DChord(qk, Array(order, order), Array(nSamplesX, nSamplesY), 1e-2)
 

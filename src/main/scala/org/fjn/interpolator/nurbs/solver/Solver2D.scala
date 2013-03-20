@@ -110,8 +110,6 @@ trait Solver2D {
 
     val qXMatrixInv = LinearAlgebra.inv(qXMatrix)
 
-
-
     val futuresOnSystemSolver: Seq[() => DenseMatrix[Double]] =
       for (k <- 0 until dim(0)) //we have dim(1) dim(1) points in y-direction, which are slices now
       yield {
@@ -121,11 +119,10 @@ trait Solver2D {
           {
             val rightM = new DenseMatrix[Double](dim(1), pointDimension)
             for (i <- 0 until dim(1)) {
-              for (j <- 0 until pointDimension)
-                {
-                  val rl: DenseMatrix[Double] = Rl(i)
-                  rightM(i, j) = rl(k, j)
-                }
+              for (j <- 0 until pointDimension) {
+                val rl: DenseMatrix[Double] = Rl(i)
+                rightM(i, j) = rl(k, j)
+              }
             }
 
             qXMatrixInv * rightM
