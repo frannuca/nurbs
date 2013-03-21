@@ -12,11 +12,12 @@ import net.ericaro.surfaceplotter.JSurfacePanel
 import net.ericaro.surfaceplotter.surface.ArraySurfaceModel
 import scala.math._
 import breeze.linalg.DenseMatrix
+import org.fjn.interpolator.smoothers.{ Discontinuity, LinearDiscontinuityInterpolation }
 
 object plotting {
 
-  val nSamplesX = 10
-  val nSamplesY = 10
+  val nSamplesX = 100
+  val nSamplesY = 500
 
   val nSamplesX2 = 125
   val nSamplesY2 = 125
@@ -62,20 +63,30 @@ object plotting {
   }
 
   def psinc(u: Double, v: Double): Double = {
-    sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4) * 100.0
+    sin(sqrt(u * u + v * v + 1e-4)) / sqrt(u * u + v * v + 1e-4) * 100.0 + steps.step(u, v)
   }
 
+  val middle = 8
+
+  val axis_t = (0 until 6).map(k => -0.5 * middle * Pi + middle * Pi * k.toDouble / (nSamplesY - 1))
+  def generateDiscontinuities(n: Int): Seq[Discontinuity] = {
+
+    (0 until n).map(i => {
+      val v1 = (-0.5 * middle * Pi + middle * Pi * i.toDouble / (nSamplesX - 1)) * 3.0
+      new Discontinuity(strike = v1, discontinuity = axis_t.map(_ => 0.1).toSeq)
+    }).toSeq
+
+  }
   def generateSamples(nSamplesX: Int, nSamplesY: Int): (IndexedSeq[DenseMatrix[Double]]) = {
 
-    val middle = 8
     val a = for {
       k <- 0 until nSamplesY
       h <- 0 until nSamplesX
     } yield {
       val mt = new DenseMatrix[Double](2, 1)
 
-      val v1 = -0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)
-      val v2 = -0.5 * middle * Pi + middle * Pi * 2.25 * k.toDouble / (nSamplesY - 1)
+      val v1 = (-0.5 * middle * Pi + middle * Pi * h.toDouble / (nSamplesX - 1)) * 3.0
+      val v2 = -0.5 * middle * Pi + middle * Pi * k.toDouble / (nSamplesY - 1)
       mt(0, 0) = v1
       mt(1, 0) = v2
       mt
@@ -84,6 +95,7 @@ object plotting {
 
   }
 
+  val steps = new LinearDiscontinuityInterpolation(generateDiscontinuities(5), axis_t)
   def testFunc(bspline: Nurbs2DBase, z: Array[Double], qk: Seq[DenseMatrix[Double]], dim: Int) {
 
     bspline.solve(z)
